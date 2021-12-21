@@ -1,0 +1,14 @@
+  - name: Install node
+    tags:
+        - node
+    shell: brew install node
+
+  - name: Install n
+    tags:
+        - node
+    shell: npm install n -g
+
+  - name: n 14
+    tags:
+        - node
+    shell: n 14

@@ -1,0 +1,14 @@
+  - name: Install zsh
+    tags: 
+        - zsh
+    shell: brew install zsh
+
+  - name: Change shell
+    tags: 
+        - zsh
+    shell: sudo chsh -s `which zsh`
+
+  - name: Install oh-my-zsh
+    tags: 
+        - zsh
+    shell: curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh | sh

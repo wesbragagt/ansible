@@ -1,0 +1,14 @@
+- hosts: localhost
+  vars:
+    source_key: "./.ssh/id_rsa"
+    dest_key: "{{ lookup('env', 'HOME') }}/.ssh/id_rsa"
+
+- name: Bootstrap a new computer
+  hosts: localhost
+
+  tasks:
+  - include: tasks/ssh.yml
+  - include: tasks/zsh.yml
+  - include: tasks/node.yml
+  - include: tasks/neovim.yml
+  - include: tasks/dotfiles.yml
