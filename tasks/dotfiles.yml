@@ -11,7 +11,7 @@
     recursive: yes
     update: yes
     accept_hostkey: yes
-    version: migrate-lsp
+    version: master
   tags:
     - install
     - dotfiles

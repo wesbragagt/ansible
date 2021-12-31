@@ -1,14 +1,16 @@
-  - name: Install node
-    tags:
-        - node
-    shell: brew install node
-
   - name: Install n
     tags:
         - node
-    shell: npm install n -g
+    shell: brew install n
 
-  - name: n 14
+  - name: n lts
     tags:
         - node
-    shell: n 14
+    shell: n lts
+
+  - name: Yarn package manager
+    tags:
+        - node
+        - package-manager
+
+    shell: npm install yarn -g
