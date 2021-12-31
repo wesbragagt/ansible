@@ -1,12 +1,7 @@
 - name: Bootstrap a new computer
   hosts: localhost
   become: yes
-  vars:
-    source_key: "./.ssh/id_rsa"
-    dest_key: "{{ lookup('env', 'HOME') }}/.ssh/id_rsa" 
   tasks:
-  - include: tasks/ssh.yml
-  - include: tasks/git-setup.yml
   - include: tasks/zsh.yml
   - include: tasks/node.yml
   - include: tasks/neovim.yml
