@@ -1,15 +1,21 @@
 - name: Installing stow
-  shell: brew install stow
+  become: true
+  apt: name=stow
   tags:
     - install
     - dotfiles
     - stow
+
 - name: Cloning .dotfiles
-  shell: cd $HOME && git clone https://github.com/wesbragagt/.dotfiles.git
+  shell: git clone https://github.com/wesbragagt/.dotfiles.git
+  args:
+    creates: $HOME/.dotfiles
   tags:
     - install
     - dotfiles
     - stow
+    - clone
+
 - name: Stow dotfiles
   shell: cd $HOME/.dotfiles && ./setup.sh
   tags:

@@ -1,0 +1,13 @@
+version: '3.0'
+services:
+  new_computer:
+    container_name: new_computer
+    build:
+      dockerfile: Dockerfile.ubuntu
+      context: .
+    volumes:
+      - "./local.yml:/home/wesbragagt/local.yml"
+      - "./tasks:/home/wesbragagt/tasks"
+    tty: true
+    stdin_open: true
+    entrypoint: /bin/bash

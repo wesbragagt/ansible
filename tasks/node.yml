@@ -1,16 +1,21 @@
-  - name: Install n
-    tags:
-        - node
-    shell: brew install n
-
-  - name: n lts
-    tags:
-        - node
-    shell: n lts
-
-  - name: Yarn package manager
-    tags:
-        - node
-        - package-manager
-
-    shell: npm install yarn -g
+- name: Install nodejs and npm
+  become: true
+  apt:
+    name: ["nodejs", "npm"]
+  tags:
+    - install
+    - node
+- name: Install N
+  become: true
+  npm:
+    name: n
+    global: yes
+  tags:
+    - install
+    - node
+- name: Install correct version of Node
+  become: true
+  shell: n 16
+  tags:
+    - install
+    - node

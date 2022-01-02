@@ -1,14 +1,24 @@
-  - name: Install zsh
-    tags: 
-        - zsh
-    shell: brew install zsh
+- name: Install ZSH
+  become: true
+  apt: name=zsh
+  tags: &tags_for_zsh_tasks [ 'install', 'productivity', 'dotfiles', 'zsh' ]
+    
+- name: Change shell to zsh
+  become: true
+  shell: chsh -s $(which zsh)
+  tags: *tags_for_zsh_tasks
 
-  - name: Change shell
-    tags: 
-        - zsh
-    shell: sudo chsh -s `which zsh`
+- name: Check that the somefile.conf exists
+  stat:
+    path: /home/wesbragagt/.oh-my-zsh
+  register: oh_my_stats
+  tags: *tags_for_zsh_tasks
 
-  - name: Install oh-my-zsh
-    tags: 
-        - zsh
-    shell: curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh | sh
+- name: Oh-My-Zsh
+  shell: curl -L https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh > ~/.oh-my-installer && chmod +x ~/.oh-my-installer && ~/.oh-my-installer
+  tags: *tags_for_zsh_tasks
+  when: oh_my_stats.stat.exists == False
+  become_user: wesbragagt
+
+- name: Delete default .zshrc
+  shell: rm -rf ~/.zshrc
