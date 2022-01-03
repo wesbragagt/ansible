@@ -24,8 +24,8 @@ RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 # Set as default user
 USER wesbragagt
 ENV HOME="/home/wesbragagt"
-ENV PATH="/home/linuxbrew/.linuxbrew/bin:${PATH}"
 
+ENV PATH="/home/linuxbrew/.linuxbrew/bin:${PATH}"
 RUN sudo chown -R wesbragagt /home/linuxbrew/.linuxbrew
 
 WORKDIR /home/wesbragagt

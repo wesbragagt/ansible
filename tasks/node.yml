@@ -1,6 +1,6 @@
 - name: Install nodejs and npm
   become: true
-  apt:
+  homebrew:
     name: ["nodejs", "npm"]
   tags:
     - install
@@ -21,7 +21,6 @@
     - node
 
 - name: Install basic globals
-  become: true
   shell: npm install -g typescript ts-node
   tags:
    - install
