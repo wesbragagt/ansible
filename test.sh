@@ -1,6 +1,7 @@
 #!/bin/bash
 
-set -e
+container_image="new_computer"
 
-docker build -t new-computer . &&
-docker run -it --rm new-computer 
+docker-compose down && 
+docker-compose up -d --build && 
+docker-compose exec $container_image bash
