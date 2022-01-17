@@ -1,25 +1,21 @@
-FROM ubuntu:focal AS base
+FROM linuxbrew/brew AS base
 
-WORKDIR /usr/local/bin
-ENV DEBIAN_FRONTEND=noninteractive
-RUN apt-get update
-RUN apt-get upgrade -y 
-RUN apt-get install -y software-properties-common curl git build-essential 
-RUN apt-add-repository -y ppa:ansible/ansible 
-RUN apt-get update 
-RUN apt-get install -y curl git ansible build-essential sudo
-RUN apt-get clean autoclean 
-RUN apt-get autoremove --yes 
-RUN apt-get install vim --yes
+RUN brew install ansible 
+RUN ansible --version
 
-RUN curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh | bash
- 
-FROM base AS wes
+RUN apt-get update && \
+    apt-get install -y -q --allow-unauthenticated \
+    git \
+    sudo \ 
+    vim
+RUN echo "Defaults env_editor,editor=/usr/bin/vi:/usr/bin/nano:/usr/bin/vim" >> /etc/sudoers
+
+
 # Create ubuntu user with sudo privileges
 RUN useradd -ms /bin/bash wesbragagt && \
     usermod -aG sudo wesbragagt
 # New added for disable sudo password
-RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+RUN echo 'wesbragagt ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
 # Set as default user
 USER wesbragagt

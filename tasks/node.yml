@@ -1,27 +1,24 @@
 - name: Install nodejs and npm
-  become: true
+  become: yes
+  become_user: "{{ansible_user_id}}"
   homebrew:
-    name: ["nodejs", "npm"]
-  tags:
-    - install
-    - node
-- name: Install N
-  become: true
+    name: ["node@14", "npm"]
+  tags: &tags_for_node_tasks [ 'install', 'node']
+
+- name: Create npm folder
+  shell: mkdir ~/.npm_global
+  tags: *tags_for_node_tasks
+
+- name: Set NPM prefix
+  shell: npm config set prefix ~/.npm_global
+  tags: *tags_for_node_tasks
+
+- name: Install yarn
   npm:
-    name: n
-    global: yes
-  tags:
-    - install
-    - node
-- name: Install correct version of Node
-  become: true
-  shell: n 16
-  tags:
-    - install
-    - node
+    name: yarn
+    global: true
+  tags: *tags_for_node_tasks
 
 - name: Install basic globals
   shell: npm install -g typescript ts-node
-  tags:
-   - install
-   - node
+  tags: *tags_for_node_tasks

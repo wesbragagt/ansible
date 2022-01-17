@@ -1,7 +1,7 @@
 version: '3.0'
 services:
   new_computer:
-    container_name: new_computer_ubuntu
+    container_name: new_mac
     build: .
     volumes:
       - "./local.yml:/home/wesbragagt/local.yml"

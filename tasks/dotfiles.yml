@@ -1,6 +1,7 @@
 - name: Installing stow
-  become: true
-  apt: name=stow
+  become: yes
+  become_user: "{{ansible_user_id}}"
+  homebrew: name=stow
   tags:
     - install
     - dotfiles

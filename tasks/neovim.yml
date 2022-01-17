@@ -1,35 +1,18 @@
-- name: Install prerequisites
-  become: true
-  apt:
-    name: ["ninja-build", "gettext", "libtool", "libtool-bin", "autoconf", "automake", "cmake", "g++", "pkg-config", "unzip", "curl", "doxygen"]
-  tags:
-    - install
-    - neovim
-
-- name: Clone Neovim
-  ansible.builtin.git:
-    repo: 'https://github.com/neovim/neovim.git'
-    version: stable
-    dest: "{{ lookup('env', 'HOME') }}/neovim"
-  tags:
-    - install
-    - neovim
-
-- name: Build neovim
-  shell: "cd {{ lookup('env', 'HOME') }}/neovim && make"
-  tags:
-    - install
-    - neovim
-- name: Install neovim
-  become: true
-  shell: "cd {{ lookup('env', 'HOME') }}/neovim && make install"
-  tags:
-    - install
-    - neovim
+- name: Install Neovim
+  become: yes
+  become_user: "{{ansible_user_id}}"
+  homebrew: name=neovim
+  tags: &tags_for_neovim_tasks ["install", "neovim"]
 
 - name: Install Vim-Plug
   shell: curl -fLo "${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/autoload/plug.vim --create-dirs \
        https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim 
-  tags:
-    - install
-    - neovim
+  tags: *tags_for_neovim_tasks 
+
+- name: Install Plugins headless
+  shell: nvim +PlugInstall +qa
+  args:
+    stdin: "\n"
+  tags: *tags_for_neovim_tasks 
+
+  

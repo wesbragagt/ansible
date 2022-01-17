@@ -1,10 +1,8 @@
 - name: Install packages
-  become: true
-  apt:
-    name: [ "tmux",  "fzf", "fd-find", "ripgrep" ]
+  become: yes
+  become_user: "{{ansible_user_id}}"
+  homebrew:
+    name: [ "tmux",  "fzf", "fd", "ripgrep" ]
   tags:
     - install
     - productivity
-- name: Symlink fd
-  become: true
-  shell: ln -s $(which fdfind) /usr/bin/fd
