@@ -1,0 +1,11 @@
+- name: Check for Homebrew
+  become: true
+  become_user: "{{ansible_user_id}}"
+  shell: which brew
+  register: homebrew_exist
+  tags: &tags_for_homebrew ["homebrew", "install"]
+
+- name: Install Homebrew
+  shell: /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)" 
+  when: homebrew_exist.stdout == ""
+  tags: *tags_for_homebrew
