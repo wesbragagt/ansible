@@ -13,6 +13,7 @@ My automated development. Includes installation of the following tools:
 - fzf
 - tmux
 - fd
+- bat
 - rg(ripgrep)
 
 ## Getting Started

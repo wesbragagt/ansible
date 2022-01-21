@@ -13,12 +13,6 @@
   shell: npm config set prefix ~/.npm_global
   tags: *tags_for_node_tasks
 
-- name: Install yarn
-  npm:
-    name: yarn
-    global: true
-  tags: *tags_for_node_tasks
-
 - name: Install basic globals
-  shell: npm install -g typescript ts-node
+  shell: npm install -g yarn typescript jest ts-node @appguru/luafmt prettier 
   tags: *tags_for_node_tasks
