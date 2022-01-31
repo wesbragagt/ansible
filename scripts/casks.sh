@@ -8,7 +8,6 @@ brew install cask
 apps=(
     slack
     visual-studio-code  
-    brave 
     google-chrome
     postman
     iterm2

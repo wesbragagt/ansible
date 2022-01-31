@@ -8,9 +8,7 @@
     - stow
 
 - name: Cloning .dotfiles
-  shell: git clone https://github.com/wesbragagt/.dotfiles.git
-  args:
-    creates: $HOME/.dotfiles
+  shell: git clone https://github.com/wesbragagt/.dotfiles.git ~/.dotfiles
   tags:
     - install
     - dotfiles

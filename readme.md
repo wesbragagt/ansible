@@ -22,4 +22,4 @@ My automated development. Includes installation of the following tools:
 
 2. Make sure to have ansible installed -> ./scripts/ansible.sh
 
-3. ansible-playbook local.yml --ask-sudo-pass
+3. ansible-playbook local.yml --ask-become-pass

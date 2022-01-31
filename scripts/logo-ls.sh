@@ -18,4 +18,4 @@ git clone https://github.com/Yash-Handa/logo-ls.git &&
 cd ~/logo-ls &&
 go mod tidy &&
 go build &&
-sudo cp logo-ls /usr/local/bin
+sudo cp logo-ls /opt/homebrew/bin/
