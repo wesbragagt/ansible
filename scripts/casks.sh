@@ -14,6 +14,7 @@ apps=(
     runjs
     raycast
     drawio
+    obsidian
 )
 
 #install casks
