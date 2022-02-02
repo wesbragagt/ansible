@@ -1,9 +1,13 @@
-- name: Install nodejs and npm
+  # https://github.com/Schniz/fnm
+- name: Install fnm Node Version manager and npm
   become: yes
   become_user: "{{ansible_user_id}}"
   homebrew:
-    name: ["node@14", "npm"]
+    name: ["fnm", "npm"]
   tags: &tags_for_node_tasks [ 'install', 'node']
+
+- name: Source fnm
+  shell: eval `fnm env`
 
 - name: Create npm folder
   shell: mkdir ~/.npm_global
