@@ -1,4 +1,4 @@
-- name: Install fnm Node Version manager and npm
+- name: Install Node, NPM and NVM 
   become: yes
   become_user: "{{ansible_user_id}}"
   homebrew:

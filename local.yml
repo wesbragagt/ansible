@@ -7,3 +7,4 @@
   - include: tasks/node.yml
   - include: tasks/neovim.yml
   - include: tasks/productivity.yml
+  - include: tasks/python.yml
