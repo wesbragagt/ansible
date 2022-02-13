@@ -2,7 +2,7 @@
   become: yes
   become_user: "{{ansible_user_id}}"
   homebrew:
-    name: [ "tmux",  "fzf", "fd", "ripgrep", "bat", "jq" ]
+    name: [ "tmux",  "fzf", "fd", "ripgrep", "bat", "jq", "jless" ]
   tags:
     - install
     - productivity
