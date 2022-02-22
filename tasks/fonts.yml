@@ -1,0 +1,10 @@
+- name: Install Fonts
+  become: yes
+  become_user: "{{ansible_user_id}}"
+  shell: |
+    brew tap homebrew/cask-fonts
+    brew install --cask font-hack-nerd-font font-fira-code-nerd-font
+  tags:
+    - install
+    - fonts
+    - optional
