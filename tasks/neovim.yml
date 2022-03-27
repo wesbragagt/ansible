@@ -8,11 +8,3 @@
   shell: curl -fLo "${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/autoload/plug.vim --create-dirs \
        https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim 
   tags: *tags_for_neovim_tasks 
-
-- name: Install Plugins headless
-  shell: nvim +PlugInstall +qa
-  args:
-    stdin: "\n"
-  tags: *tags_for_neovim_tasks 
-
-  
