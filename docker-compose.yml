@@ -6,6 +6,7 @@ services:
     volumes:
       - "./local.yml:/home/wesbragagt/local.yml"
       - "./tasks:/home/wesbragagt/tasks"
+      - "./Makefile:/home/wesbragagt/Makefile"
     tty: true
     stdin_open: true
     entrypoint: /bin/bash

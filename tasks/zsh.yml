@@ -25,6 +25,7 @@
   when: oh_my_stats.stat.exists == False
   become: yes
   become_user: "{{ansible_user_id}}"
+  ignore_errors: yes
 
 - name: Delete default .zshrc
   shell: rm -rf ~/.zshrc
