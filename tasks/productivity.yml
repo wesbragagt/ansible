@@ -1,8 +1,33 @@
 - name: Install productivity packages
-  become: yes
-  become_user: "{{ansible_user_id}}"
-  homebrew:
-    name: [ "tmux",  "fzf", "fd", "ripgrep", "bat", "jq"]
   tags:
     - install
     - productivity
+  become: yes
+  become_user: "{{ansible_user_id}}"
+  homebrew:
+    name: [ "tmux",  "fzf", "fd", "ripgrep", "bat", "jq", "git-delta"]
+
+- name: Add git delta config
+  tags: 
+    - install
+    - productivity
+    - git
+  become: yes
+  become_user: "{{ansible_user_id}}"
+  shell:
+    cmd: |
+      cat >> ~/.gitconfig<< EOF
+          [core]
+          pager = delta
+
+          [interactive]
+              diffFilter = delta --color-only
+          [delta]
+              navigate = true  # use n and N to move between diff sections
+              line-numbers = true
+              side-by-side = true
+          [merge]
+              conflictstyle = diff3
+          [diff]
+              colorMoved = default
+          EOF
