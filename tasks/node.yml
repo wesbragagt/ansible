@@ -1,9 +1,9 @@
-- name: Install Node, NPM and NVM 
+- name: Install Node, NPM and NVM
   become: yes
   become_user: "{{ansible_user_id}}"
   homebrew:
-    name: ["node", "npm","nvm"]
-  tags: &tags_for_node_tasks [ 'install', 'node']
+    name: ["node", "npm", "nvm"]
+  tags: &tags_for_node_tasks ["install", "node"]
 
 - name: Create node_version_manager folder
   shell: mkdir ~/.node_version_manager
@@ -18,5 +18,5 @@
   tags: *tags_for_node_tasks
 
 - name: Install basic globals
-  shell: npm install -g yarn typescript jest ts-node @appguru/luafmt prettier 
+  shell: npm install -g yarn typescript jest ts-node @appguru/luafmt prettier @fsouza/prettierd
   tags: *tags_for_node_tasks
