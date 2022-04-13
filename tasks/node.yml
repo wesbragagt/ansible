@@ -18,5 +18,5 @@
   tags: *tags_for_node_tasks
 
 - name: Install basic globals
-  shell: npm install -g yarn typescript jest ts-node @appguru/luafmt prettier @fsouza/prettierd
+  shell: npm install -g yarn typescript jest ts-node @appguru/luafmt prettier @fsouza/prettierd eslint_d
   tags: *tags_for_node_tasks
