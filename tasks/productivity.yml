@@ -5,10 +5,10 @@
   become: yes
   become_user: "{{ansible_user_id}}"
   homebrew:
-    name: [ "tmux",  "fzf", "fd", "ripgrep", "bat", "jq", "git-delta"]
+    name: ["tmux", "fzf", "fd", "ripgrep", "bat", "jq", "git-delta", "stylua"]
 
 - name: Add git delta config
-  tags: 
+  tags:
     - install
     - productivity
     - git
