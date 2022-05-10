@@ -1,5 +1,5 @@
 - name: Install Fonts
-  become: yes
+  become: true
   become_user: "{{ansible_user_id}}"
   shell: |
     brew tap homebrew/cask-fonts

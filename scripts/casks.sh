@@ -11,6 +11,7 @@ apps=(
     google-chrome
     postman
     iterm2
+    alacritty
     runjs
     raycast
     drawio
