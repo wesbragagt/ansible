@@ -1,6 +1,10 @@
 - name: Install productivity packages
+  async: 120 # Maximum allowed time in Seconds
+  poll: 05 # Polling Interval in Seconds
   tags:
     - install
+    - dotfiles
+    - neovim
     - productivity
   become: yes
   become_user: "{{ansible_user_id}}"
@@ -8,6 +12,8 @@
     name: ["tmux", "fzf", "fd", "ripgrep", "bat", "jq", "git-delta", "stylua"]
 
 - name: Add git delta config
+  async: 120 # Maximum allowed time in Seconds
+  poll: 05 # Polling Interval in Seconds
   tags:
     - install
     - productivity

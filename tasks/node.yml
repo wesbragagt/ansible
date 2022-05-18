@@ -18,5 +18,7 @@
   tags: *tags_for_node_tasks
 
 - name: Install basic globals
+  async: 120 # Maximum allowed time in Seconds
+  poll: 05 # Polling Interval in Seconds
   shell: npm install -g yarn typescript jest ts-node prettier @fsouza/prettierd eslint_d
   tags: *tags_for_node_tasks
