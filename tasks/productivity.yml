@@ -5,9 +5,21 @@
     - neovim
     - productivity
   become: yes
-  become_user: "{{ansible_user_id}}"
+  become_user: '{{ansible_user_id}}'
   homebrew:
-    name: ["tmux", "fzf", "fd", "ripgrep", "mmv", "bat", "jq", "git-delta", "stylua"]
+    name:
+      [
+        'tmux',
+        'tmuxinator',
+        'fzf',
+        'fd',
+        'ripgrep',
+        'mmv',
+        'bat',
+        'jq',
+        'git-delta',
+        'stylua',
+      ]
 
 - name: Add git delta config
   tags:
@@ -15,7 +27,7 @@
     - productivity
     - git
   become: yes
-  become_user: "{{ansible_user_id}}"
+  become_user: '{{ansible_user_id}}'
   shell:
     cmd: |
       cat >> ~/.gitconfig<< EOF
