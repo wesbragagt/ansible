@@ -1,9 +1,8 @@
 - name: Install Node, NPM and NVM
   become: yes
-  become_user: "{{ansible_user_id}}"
-  homebrew:
-    name: ["node", "npm", "nvm"]
-  tags: &tags_for_node_tasks ["install", "node"]
+  become_user: '{{ansible_user_id}}'
+  shell: nix-env -if ./nix/node.nix
+  tags: &tags_for_node_tasks ['install', 'node']
 
 - name: Create node_version_manager folder
   shell: mkdir ~/.node_version_manager

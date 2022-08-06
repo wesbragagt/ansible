@@ -2,3 +2,4 @@
   hosts: localhost
   tasks:
     - include: tasks/productivity.yml
+    - include: tasks/node.yml
