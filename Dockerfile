@@ -1,15 +1,13 @@
-FROM linuxbrew/brew AS base
-
-RUN brew install ansible 
-RUN ansible --version
+FROM ubuntu:focal AS base
 
 RUN apt-get update && \
     apt-get install -y -q --allow-unauthenticated \
     git \
     sudo \ 
-    vim
-RUN echo "Defaults env_editor,editor=/usr/bin/vi:/usr/bin/nano:/usr/bin/vim" >> /etc/sudoers
+    vim \
+    curl
 
+RUN echo "Defaults env_editor,editor=/usr/bin/vi:/usr/bin/nano:/usr/bin/vim" >> /etc/sudoers
 
 # Create ubuntu user with sudo privileges
 RUN useradd -ms /bin/bash wesbragagt && \
@@ -21,7 +19,6 @@ RUN echo 'wesbragagt ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 USER wesbragagt
 ENV HOME="/home/wesbragagt"
 
-ENV PATH="/home/linuxbrew/.linuxbrew/bin:${PATH}"
-RUN sudo chown -R wesbragagt /home/linuxbrew/.linuxbrew
+ENV PATH="/home/wesbragagt/.nix-profile/bin:${PATH}"
 
 WORKDIR /home/wesbragagt

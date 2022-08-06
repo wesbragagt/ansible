@@ -4,9 +4,11 @@ services:
     container_name: new_mac
     build: .
     volumes:
-      - "./local.yml:/home/wesbragagt/local.yml"
-      - "./tasks:/home/wesbragagt/tasks"
-      - "./Makefile:/home/wesbragagt/Makefile"
+      - './local.yml:/home/wesbragagt/local.yml'
+      - './tasks:/home/wesbragagt/tasks'
+      - './Makefile:/home/wesbragagt/Makefile'
+      - './nix:/home/wesbragagt/nix'
+      - './scripts:/home/wesbragagt/scripts'
     tty: true
     stdin_open: true
     entrypoint: /bin/bash

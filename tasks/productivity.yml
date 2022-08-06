@@ -6,20 +6,7 @@
     - productivity
   become: yes
   become_user: '{{ansible_user_id}}'
-  homebrew:
-    name:
-      [
-        'tmux',
-        'tmuxinator',
-        'fzf',
-        'fd',
-        'ripgrep',
-        'mmv',
-        'bat',
-        'jq',
-        'git-delta',
-        'stylua',
-      ]
+  shell: nix-env -if ./nix/productivity.nix
 
 - name: Add git delta config
   tags:
