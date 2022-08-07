@@ -1,18 +1,13 @@
-- name: Install productivity packages
-  tags:
+- name: Install core packages
+  tags: &core_tags
     - install
-    - dotfiles
-    - neovim
-    - productivity
+    - core
   become: yes
   become_user: '{{ansible_user_id}}'
-  shell: nix-env -if ./nix/productivity.nix
+  shell: nix-env -if ./nix/core.nix
 
 - name: Add git delta config
-  tags:
-    - install
-    - productivity
-    - git
+  tags: *core_tags
   become: yes
   become_user: '{{ansible_user_id}}'
   shell:

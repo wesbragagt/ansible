@@ -1,22 +1,17 @@
-- name: Installing stow
-  become: yes
-  become_user: "{{ansible_user_id}}"
-  homebrew: name=stow
-  tags:
-    - install
+- name: Check dotfiles
+  stat:
+    path: "/home/{{ansible_user_id}}/.dotfiles"
+  register: dotfiles
+  tags: &tags_for_dotfiles
     - dotfiles
+    - install
     - stow
 
 - name: Cloning .dotfiles
   shell: git clone https://github.com/wesbragagt/.dotfiles.git ~/.dotfiles
-  tags:
-    - install
-    - dotfiles
-    - stow
+  when: dotfiles.stat.exists == False 
+  tags: *tags_for_dotfiles
 
 - name: Stow dotfiles
   shell: cd $HOME/.dotfiles && ./setup.sh
-  tags:
-    - install
-    - dotfiles
-    - stow
+  tags: *tags_for_dotfiles

@@ -1,4 +1,3 @@
-# Productivity tools
 with import <nixpkgs>{};
 [
         tmux
@@ -10,4 +9,7 @@ with import <nixpkgs>{};
         jq
         delta
         stylua
+        stow
+        zsh
+        neovim
 ]
