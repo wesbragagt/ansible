@@ -1,21 +1,21 @@
 - name: Install ZSH
   become: yes
-  become_user: "{{ansible_user_id}}"
+  become_user: '{{ansible_user_id}}'
   homebrew: name=zsh
-  tags: &tags_for_zsh_tasks [ 'install', 'productivity', 'zsh' ]
+  tags: &tags_for_zsh_tasks ['install', 'zsh']
 
-# This will set the variable the_user to the current running user, but will change the shell of that user using root. 
+# This will set the variable the_user to the current running user, but will change the shell of that user using root.
 # https://stackoverflow.com/questions/43560657/edit-current-users-shell-with-ansible
 - name: Change shell to zsh
   tags: *tags_for_zsh_tasks
   become: yes
   user:
-    name: "{{ ansible_user_id }}"
+    name: '{{ ansible_user_id }}'
     shell: /bin/zsh
 
 - name: Check that the somefile.conf exists
   stat:
-    path: "/home/{{ansible_user_id}}/.oh-my-zsh"
+    path: '/home/{{ansible_user_id}}/.oh-my-zsh'
   register: oh_my_stats
   tags: *tags_for_zsh_tasks
 
@@ -24,7 +24,7 @@
   tags: *tags_for_zsh_tasks
   when: oh_my_stats.stat.exists == False
   become: yes
-  become_user: "{{ansible_user_id}}"
+  become_user: '{{ansible_user_id}}'
   ignore_errors: yes
 
 - name: Delete default .zshrc

@@ -1,8 +1,5 @@
 - name: Install productivity packages
   tags:
-    - install
-    - dotfiles
-    - neovim
     - productivity
   become: yes
   become_user: '{{ansible_user_id}}'
@@ -19,13 +16,12 @@
         'jq',
         'git-delta',
         'stylua',
+        'lsd',
       ]
 
 - name: Add git delta config
   tags:
-    - install
     - productivity
-    - git
   become: yes
   become_user: '{{ansible_user_id}}'
   shell:
