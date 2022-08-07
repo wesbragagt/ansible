@@ -11,5 +11,5 @@ with import <nixpkgs>{};
         stylua
         stow
         zsh
-        neovim
+        lsd
 ]

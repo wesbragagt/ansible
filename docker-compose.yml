@@ -9,6 +9,7 @@ services:
       - './Makefile:/home/wesbragagt/Makefile'
       - './nix:/home/wesbragagt/nix'
       - './scripts:/home/wesbragagt/scripts'
+      - './start.sh:/home/wesbragagt/start.sh'
     tty: true
     stdin_open: true
     entrypoint: /bin/bash

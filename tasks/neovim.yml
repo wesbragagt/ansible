@@ -1,0 +1,7 @@
+- name: Install neovim
+  tags: &core_tags
+    - install
+    - core
+  become: yes
+  become_user: '{{ansible_user_id}}'
+  shell: nix-env -if ./nix/neovim.nix

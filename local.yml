@@ -5,3 +5,4 @@
     - include: tasks/zsh.yml
     - include: tasks/dotfiles.yml
     - include: tasks/node.yml
+    - include: tasks/neovim.yml

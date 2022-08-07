@@ -19,6 +19,4 @@ RUN echo 'wesbragagt ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 USER wesbragagt
 ENV HOME="/home/wesbragagt"
 
-ENV PATH="/home/wesbragagt/.nix-profile/bin:${PATH}"
-
 WORKDIR /home/wesbragagt
