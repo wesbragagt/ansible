@@ -1,6 +1,5 @@
 with import <nixpkgs>{};
 [
-        tmux
         fzf
         fd
         ripgrep

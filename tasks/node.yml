@@ -4,6 +4,12 @@
   shell: nix-env -if ./nix/node.nix
   tags: &tags_for_node_tasks ['install', 'node']
 
+- name: Set default node version
+  tags: *tags_for_node_tasks
+  become: yes
+  become_user: '{{ansible_user_id}}'
+  shell: fnm install 16 && fnm default 16
+
 - name: Create node_version_manager folder
   shell: mkdir ~/.node_version_manager
   tags: *tags_for_node_tasks
