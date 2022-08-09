@@ -2,14 +2,8 @@
   become: yes
   become_user: '{{ansible_user_id}}'
   homebrew:
-    name: [ 'npm', 'fnm']
+    name: [ 'node','npm', 'fnm']
   tags: &tags_for_node_tasks ['install', 'node']
-
-- name: Get default version of node
-  become: yes
-  become_user: '{{ansible_user_id}}'
-  shell: fnm install 16 && fnm default 16
-  tags: *tags_for_node_tasks
 
 - name: Create npm folder
   shell: rm -rf ~/.npm_global && mkdir ~/.npm_global
