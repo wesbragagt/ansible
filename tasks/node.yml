@@ -2,7 +2,7 @@
   become: yes
   become_user: '{{ansible_user_id}}'
   homebrew:
-    name: [ 'node','npm', 'fnm']
+    name: ['node', 'npm', 'fnm']
   tags: &tags_for_node_tasks ['install', 'node']
 
 - name: Create npm folder
@@ -17,33 +17,4 @@
   async: 120 # Maximum allowed time in Seconds
   poll: 05 # Polling Interval in Seconds
   shell: npm install -g yarn typescript jest ts-node prettier @fsouza/prettierd eslint_d
-  tags: *tags_for_node_tasks
-
-- name: Check Node debug Adapter
-  stat:
-    path: ~/.debug_adapters/vscode-node-debug2
-  register: vscode_node_debug2
-  tags: *tags_for_node_tasks
-
-- name: Setup Node Debug Adapter
-  when: not vscode_node_debug2.stat.exists
-  shell: | 
-    git clone https://github.com/microsoft/vscode-node-debug2.git ~/.debug_adapters/vscode-node-debug2 &&
-    cd ~/.debug_adapters/vscode-node-debug2 && npm install && 
-    NODE_OPTIONS=--no-experimental-fetch npm run build
-  tags: *tags_for_node_tasks
-
-
-- name: Check Chrome Debug Adapter
-  stat:
-    path: ~/.debug_adapters/vscode-chrome-debug
-  register: vscode_chrome_debug
-  tags: *tags_for_node_tasks
-
-- name: Setup Chrome Adapter
-  when: not vscode_chrome_debug.stat.exists
-  shell: |
-    git clone https://github.com/Microsoft/vscode-chrome-debug ~/.debug_adapters/vscode-chrome-debug &&
-    cd ~/.debug_adapters/vscode-chrome-debug &&
-    npm install && npm run build
   tags: *tags_for_node_tasks
