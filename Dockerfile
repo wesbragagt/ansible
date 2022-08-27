@@ -1,6 +1,5 @@
 FROM linuxbrew/brew AS base
 
-RUN brew update
 RUN brew install ansible 
 RUN ansible --version
 

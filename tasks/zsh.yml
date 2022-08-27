@@ -1,19 +1,19 @@
 - name: Install ZSH
-  become: yes
+  become: True
   become_user: '{{ansible_user_id}}'
   homebrew: name=zsh
-  tags: &tags_for_zsh_tasks ['install', 'zsh']
+  tags: &tags_for_zsh_tasks ['zsh']
 
 # This will set the variable the_user to the current running user, but will change the shell of that user using root.
 # https://stackoverflow.com/questions/43560657/edit-current-users-shell-with-ansible
 - name: Change shell to zsh
   tags: *tags_for_zsh_tasks
-  become: yes
+  become: True
   user:
     name: '{{ ansible_user_id }}'
     shell: /bin/zsh
 
-- name: Check that the somefile.conf exists
+- name: Check that the oh-my-zsh exists
   stat:
     path: '/home/{{ansible_user_id}}/.oh-my-zsh'
   register: oh_my_stats
@@ -22,10 +22,18 @@
 - name: Oh-My-Zsh
   shell: curl -L https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh > ~/.oh-my-installer && chmod +x ~/.oh-my-installer && ~/.oh-my-installer
   tags: *tags_for_zsh_tasks
-  when: oh_my_stats.stat.exists == False
-  become: yes
+  when: not oh_my_stats.stat.exists
+  become: True
   become_user: '{{ansible_user_id}}'
-  ignore_errors: yes
+  ignore_errors: True
 
-- name: Delete default .zshrc
-  shell: rm -rf ~/.zshrc
+- name: Check that the autosuggestions exists
+  stat:
+    path: '/home/{{ansible_user_id}}/.oh-my-zsh/custom/plugins/zsh-autosuggestions'
+  register: autosuggestions
+  tags: *tags_for_zsh_tasks
+
+- name: Auto suggestions
+  shell: git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
+  tags: *tags_for_zsh_tasks
+  when: not autosuggestions.stat.exists
