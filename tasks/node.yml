@@ -2,7 +2,7 @@
   become: yes
   become_user: '{{ansible_user_id}}'
   homebrew:
-    name: [ 'node','npm', 'fnm']
+    name: ['node', 'npm', 'fnm']
   tags: &tags_for_node_tasks ['install', 'node']
 
 - name: Create npm folder
