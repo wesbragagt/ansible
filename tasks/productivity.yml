@@ -1,28 +1,13 @@
 - name: Install productivity packages
-  tags:
-    - productivity
-  become: yes
+  tags: &productivity_tags ['install', 'optional', 'productivity']
+  become: True
   become_user: '{{ansible_user_id}}'
   homebrew:
-    name:
-      [
-        'tmux',
-        'tmuxinator',
-        'fzf',
-        'fd',
-        'ripgrep',
-        'mmv',
-        'bat',
-        'jq',
-        'git-delta',
-        'stylua',
-        'lsd',
-      ]
+    name: ['fnm', 'tmux', 'git-delta', 'stylua']
 
 - name: Add git delta config
-  tags:
-    - productivity
-  become: yes
+  tags: *productivity_tags
+  become: True
   become_user: '{{ansible_user_id}}'
   shell:
     cmd: |

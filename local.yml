@@ -1,10 +1,11 @@
 - name: Bootstrap a new computer
   hosts: localhost
   tasks:
-  - include: tasks/homebrew.yml
-  - include: tasks/zsh.yml
-  - include: tasks/dotfiles.yml
-  - include: tasks/node.yml
-  - include: tasks/neovim.yml
-  - include: tasks/productivity.yml
-  - include: tasks/fonts.yml
+    - include: tasks/homebrew.yml
+    - include: tasks/zsh.yml
+    - include: tasks/core.yml
+    - include: tasks/dotfiles.yml
+    - include: tasks/node.yml
+    - include: tasks/neovim.yml
+    - include: tasks/productivity.yml
+    - include: tasks/fonts.yml
