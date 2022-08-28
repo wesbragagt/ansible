@@ -1,9 +1,7 @@
 - name: Install Neovim
-  become: yes
+  become: True
   become_user: "{{ansible_user_id}}"
-  homebrew:
-    name=neovim
+  shell: brew install neovim
   tags: 
     - install
-    - dotfiles
     - neovim

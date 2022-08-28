@@ -1,22 +1,40 @@
+- name: Check for stow
+  become: True
+  become_user: '{{ansible_user_id}}'
+  shell: which stow
+  ignore_errors: True
+  register: stow_check
+  tags: &dotfiles_tags ['install', 'dotfiles', 'stow']
+
 - name: Installing stow
-  become: yes
-  become_user: "{{ansible_user_id}}"
-  homebrew: name=stow
-  tags:
-    - install
-    - dotfiles
-    - stow
+  become: True
+  become_user: '{{ansible_user_id}}'
+  shell: brew install stow
+  when: stow_check.stdout == ""
+  tags: *dotfiles_tags
+
+- name: Check for dotfiles cloned
+  stat:
+    path: ~/.dotfiles
+  register: dotfiles_check
+  tags: *dotfiles_tags
 
 - name: Cloning .dotfiles
   shell: git clone https://github.com/wesbragagt/.dotfiles.git ~/.dotfiles
-  tags:
-    - install
-    - dotfiles
-    - stow
+  when: not dotfiles_check.stat.exists
+  tags: *dotfiles_tags
+
+- name: Check for .zshrc
+  stat:
+    path: ~/.zshrc
+  register: zshrc_check
+  tags: *dotfiles_tags
+
+- name: Delete these files first
+  shell: rm -rf ~/.zshrc
+  when: zshrc_check.stat.exists
+  tags: *dotfiles_tags
 
 - name: Stow dotfiles
   shell: cd $HOME/.dotfiles && ./setup.sh
-  tags:
-    - install
-    - dotfiles
-    - stow
+  tags: *dotfiles_tags
