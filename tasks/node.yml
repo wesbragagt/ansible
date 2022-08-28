@@ -1,5 +1,5 @@
 - name: Install Node, NPM and NVM
-  become: yes
+  become: True
   become_user: '{{ansible_user_id}}'
   homebrew:
     name: ['node', 'npm', 'fnm']
@@ -16,5 +16,5 @@
 - name: Install basic globals
   async: 120 # Maximum allowed time in Seconds
   poll: 05 # Polling Interval in Seconds
-  shell: npm install -g yarn typescript jest ts-node prettier @fsouza/prettierd eslint_d tmux-mem
+  shell: npm install -g yarn typescript jest ts-node prettier @fsouza/prettierd eslint_d
   tags: *tags_for_node_tasks
