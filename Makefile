@@ -1,8 +1,8 @@
 test:
 	docker compose down && docker compose up --build -d && docker compose exec new_computer bash
 
-all:
-	ansible-playbook local.yml --ask-become-pass
+core:
+	ansible-playbook local.yml --ask-become-pass -t core,zsh,dotfiles,node,neovim,productivity
 
 zsh:
 	ansible-playbook local.yml -t zsh --ask-become-pass

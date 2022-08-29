@@ -1,4 +1,9 @@
-- name: Core dependencies
+- name: Core dependencies part 1
   homebrew:
-    name: ['fzf', 'fd', 'ripgrep', 'mmv', 'bat', 'jq', 'lsd']
+    name: ['fzf', 'fd', 'ripgrep']
   tags: &core_tags ['install', 'core']
+
+- name: Core dependencies part 2
+  homebrew:
+    name: ['mmv', 'bat', 'jq', 'lsd']
+  tags: *core_tags

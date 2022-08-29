@@ -3,7 +3,7 @@
   become: True
   become_user: '{{ansible_user_id}}'
   homebrew:
-    name: ['fnm', 'tmux', 'git-delta', 'stylua']
+    name: ['tmux', 'git-delta', 'stylua']
 
 - name: Add git delta config
   tags: *productivity_tags

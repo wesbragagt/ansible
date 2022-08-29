@@ -1,17 +1,8 @@
-- name: Check for stow
-  become: True
-  become_user: '{{ansible_user_id}}'
-  shell: which stow
-  ignore_errors: True
-  register: stow_check
-  tags: &dotfiles_tags ['install', 'dotfiles', 'stow']
-
 - name: Installing stow
   become: True
   become_user: '{{ansible_user_id}}'
   shell: brew install stow
-  when: stow_check.stdout == ""
-  tags: *dotfiles_tags
+  tags: &dotfiles_tags ['install', 'dotfiles']
 
 - name: Check for dotfiles cloned
   stat:
