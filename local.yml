@@ -9,3 +9,4 @@
     - include: tasks/neovim.yml
     - include: tasks/productivity.yml
     - include: tasks/fonts.yml
+    - include: tasks/kitty.yml
