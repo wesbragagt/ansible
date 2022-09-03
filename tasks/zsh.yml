@@ -29,11 +29,17 @@
 
 - name: Check that the autosuggestions exists
   stat:
-    path: '/home/{{ansible_user_id}}/.oh-my-zsh/custom/plugins/zsh-autosuggestions'
+    path: '~/{{ansible_user_id}}/.oh-my-zsh/custom/plugins/zsh-autosuggestions'
   register: autosuggestions
   tags: *tags_for_zsh_tasks
 
-- name: Auto suggestions
-  shell: git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
+- name: Check that the fzf-tab exists
+  stat:
+    path: '~/{{ansible_user_id}}/.oh-my-zsh/custom/plugins/fzf-tab'
+  register: fzf_tab
   tags: *tags_for_zsh_tasks
-  when: not autosuggestions.stat.exists
+
+- name: Fzf tab
+  shell: git clone https://github.com/Aloxaf/fzf-tab ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/fzf-tab
+  tags: *tags_for_zsh_tasks
+  when: not fzf_tab.stat.exists
