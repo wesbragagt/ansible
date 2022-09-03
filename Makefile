@@ -21,3 +21,6 @@ productivity:
 
 fonts:
 	ansible-playbook local.yml -t fonts --ask-become-pass
+
+kitty:
+	ansible-playbook local.yml -t kitty --ask-become-pass
