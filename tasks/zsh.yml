@@ -1,6 +1,7 @@
 - name: Install ZSH
-  become: yes
-  shell: bash -c brew install zsh
+  become: True
+  become_user: '{{ansible_user_id}}'
+  homebrew: name=zsh
   tags: &tags_for_zsh_tasks ['zsh']
 
 # This will set the variable the_user to the current running user, but will change the shell of that user using root.
@@ -14,7 +15,7 @@
 
 - name: Check that the oh-my-zsh exists
   stat:
-    path: '/home/{{ ansible_user_id }}/.oh-my-zsh'
+    path: '/home/{{ansible_user_id}}/.oh-my-zsh'
   register: oh_my_stats
   tags: *tags_for_zsh_tasks
 
@@ -23,18 +24,18 @@
   tags: *tags_for_zsh_tasks
   when: not oh_my_stats.stat.exists
   become: True
-  become_user: '{{ ansible_user_id }}'
+  become_user: '{{ansible_user_id}}'
   ignore_errors: True
 
 - name: Check that the autosuggestions exists
   stat:
-    path: '~/{{ ansible_user_id }}/.oh-my-zsh/custom/plugins/zsh-autosuggestions'
+    path: '~/{{ansible_user_id}}/.oh-my-zsh/custom/plugins/zsh-autosuggestions'
   register: autosuggestions
   tags: *tags_for_zsh_tasks
 
 - name: Check that the fzf-tab exists
   stat:
-    path: '~/{{ ansible_user_id }}/.oh-my-zsh/custom/plugins/fzf-tab'
+    path: '~/{{ansible_user_id}}/.oh-my-zsh/custom/plugins/fzf-tab'
   register: fzf_tab
   tags: *tags_for_zsh_tasks
 

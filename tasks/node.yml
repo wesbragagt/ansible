@@ -1,19 +1,33 @@
-- name: Install Node, NPM and NVM
+- name: Install NPM
+  retries: 3
   become: True
   become_user: '{{ansible_user_id}}'
   homebrew:
-    name: ['node', 'npm', 'fnm']
+    name: ['npm']
   tags: &tags_for_node_tasks ['install', 'node']
 
+- name: Check npm folder
+  tags: *tags_for_node_tasks
+  register: npm_folder_check
+  stat:
+    path: ~/.npm_global
+
 - name: Create npm folder
-  shell: rm -rf ~/.npm_global && mkdir ~/.npm_global
-  retries: 3
+  when: not npm_folder_check.stat.exists
+  file:
+    path: ~/.npm_global
+    state: directory
+    mode: 'u=rw,g=wx,o=rwx'
   tags: *tags_for_node_tasks
 
 - name: Set NPM prefix
   shell: npm config set prefix ~/.npm_global
   tags: *tags_for_node_tasks
 
-- name: Install basic globals
-  shell: npm install -g yarn prettier @fsouza/prettierd eslint_d
+- name: Install Node & Fnm
+  retries: 3
+  become: True
+  become_user: '{{ansible_user_id}}'
+  homebrew:
+    name: ['node', 'fnm']
   tags: *tags_for_node_tasks

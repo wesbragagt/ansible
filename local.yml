@@ -1,6 +1,5 @@
 - name: Bootstrap a new computer
   hosts: localhost
-  gather_facts: False
   tasks:
     - include: tasks/core.yml
     - include: tasks/zsh.yml
