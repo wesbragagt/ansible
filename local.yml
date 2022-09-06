@@ -1,5 +1,7 @@
 - name: Bootstrap a new computer
   hosts: localhost
+  environment:
+    HOMEBREW_NO_AUTO_UPDATE: 1
   tasks:
     - include: tasks/core.yml
     - include: tasks/zsh.yml
@@ -7,4 +9,3 @@
     - include: tasks/node.yml
     - include: tasks/neovim.yml
     - include: tasks/productivity.yml
-    - include: tasks/fonts.yml

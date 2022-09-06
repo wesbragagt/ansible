@@ -1,12 +1,5 @@
 - name: Install Neovim
   become: True
   become_user: '{{ansible_user_id}}'
-  shell: brew install neovim
+  shell: brew update && brew install neovim
   tags: &neovim_tags ['install', 'dotfiles', 'neovim']
-
-- name: Install neovim plugins
-  become: True
-  become_user: '{{ansible_user_id}}'
-  shell: nvim --headless -c 'autocmd User PackerComplete quitall' -c 'PackerSync'
-  ignore_errors: True
-  tags: *neovim_tags

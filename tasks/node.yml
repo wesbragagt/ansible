@@ -7,12 +7,14 @@
   tags: &tags_for_node_tasks ['install', 'node']
 
 - name: Check npm folder
+  ignore_errors: yes
   tags: *tags_for_node_tasks
   register: npm_folder_check
   stat:
     path: ~/.npm_global
 
 - name: Create npm folder
+  ignore_errors: yes
   when: not npm_folder_check.stat.exists
   file:
     path: ~/.npm_global
@@ -21,10 +23,12 @@
   tags: *tags_for_node_tasks
 
 - name: Set NPM prefix
+  ignore_errors: yes
   shell: npm config set prefix ~/.npm_global
   tags: *tags_for_node_tasks
 
 - name: Install Node & Fnm
+  ignore_errors: yes
   retries: 3
   become: True
   become_user: '{{ansible_user_id}}'
