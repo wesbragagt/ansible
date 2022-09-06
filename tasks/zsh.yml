@@ -1,8 +1,8 @@
 - name: Install ZSH
+  tags: &tags_for_zsh_tasks ['zsh']
   become: True
   become_user: '{{ansible_user_id}}'
   homebrew: name=zsh
-  tags: &tags_for_zsh_tasks ['zsh']
 
 # This will set the variable the_user to the current running user, but will change the shell of that user using root.
 # https://stackoverflow.com/questions/43560657/edit-current-users-shell-with-ansible
@@ -14,32 +14,32 @@
     shell: /bin/zsh
 
 - name: Check that the oh-my-zsh exists
+  tags: *tags_for_zsh_tasks
   stat:
     path: '/home/{{ansible_user_id}}/.oh-my-zsh'
   register: oh_my_stats
-  tags: *tags_for_zsh_tasks
 
 - name: Oh-My-Zsh
-  shell: curl -L https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh > ~/.oh-my-installer && chmod +x ~/.oh-my-installer && ~/.oh-my-installer
   tags: *tags_for_zsh_tasks
+  shell: curl -L https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh > ~/.oh-my-installer && chmod +x ~/.oh-my-installer && ~/.oh-my-installer
   when: not oh_my_stats.stat.exists
   become: True
   become_user: '{{ansible_user_id}}'
   ignore_errors: True
 
 - name: Check that the autosuggestions exists
+  tags: *tags_for_zsh_tasks
   stat:
     path: '~/{{ansible_user_id}}/.oh-my-zsh/custom/plugins/zsh-autosuggestions'
   register: autosuggestions
-  tags: *tags_for_zsh_tasks
 
 - name: Check that the fzf-tab exists
+  tags: *tags_for_zsh_tasks
   stat:
     path: '~/{{ansible_user_id}}/.oh-my-zsh/custom/plugins/fzf-tab'
   register: fzf_tab
-  tags: *tags_for_zsh_tasks
 
 - name: Fzf tab
-  shell: git clone https://github.com/Aloxaf/fzf-tab ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/fzf-tab
   tags: *tags_for_zsh_tasks
+  shell: git clone https://github.com/Aloxaf/fzf-tab ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/fzf-tab
   when: not fzf_tab.stat.exists
