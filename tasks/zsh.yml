@@ -33,11 +33,17 @@
     path: '~/{{ansible_user_id}}/.oh-my-zsh/custom/plugins/zsh-autosuggestions'
   register: autosuggestions
 
+- name: Auto Suggestions
+  tags: *tags_for_zsh_tasks
+  shell: git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
+  when: not autosuggestions.stat.exists
+
 - name: Check that the fzf-tab exists
   tags: *tags_for_zsh_tasks
   stat:
     path: '~/{{ansible_user_id}}/.oh-my-zsh/custom/plugins/fzf-tab'
   register: fzf_tab
+
 
 - name: Fzf tab
   tags: *tags_for_zsh_tasks
