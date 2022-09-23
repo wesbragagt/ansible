@@ -20,6 +20,8 @@ My automated development. Includes installation of the following tools:
 
 1. Authorize utility scripts -> ```sudo chmod -R +x scripts/```
 
-2. Make sure to have ansible installed -> ./scripts/ansible.sh
+2. Make sure to have homebrew or linux brew installed ```bash scripts/homebrew.sh```
 
-3. ansible-playbook local.yml --ask-become-pass
+3. Make sure to have ansible installed ```bash scripts/ansible.sh```
+
+4. ansible-playbook local.yml --ask-become-pass
