@@ -19,7 +19,6 @@ RUN useradd -ms /bin/bash wesbragagt && \
     usermod -aG sudo wesbragagt
 # New added for disable sudo password
 RUN echo 'wesbragagt ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
-RUN brew install ansible
 
 # Set as default user
 USER wesbragagt
@@ -27,9 +26,6 @@ ENV HOME="/home/wesbragagt"
 
 ENV PATH="/home/linuxbrew/.linuxbrew/bin:${PATH}"
 
-
-RUN brew update
-RUN brew install ansible 
 RUN sudo chown -R wesbragagt /home/linuxbrew/.linuxbrew
 
 WORKDIR /home/wesbragagt

@@ -4,10 +4,7 @@ services:
     container_name: new_mac
     build: .
     volumes:
-      - './local.yml:/home/wesbragagt/local.yml'
-      - './ansible.cfg:/home/wesbragagt/ansible.cfg'
-      - './tasks:/home/wesbragagt/tasks'
-      - './Makefile:/home/wesbragagt/Makefile'
+      - ".:/home/wesbragagt/dev/ansible"
     tty: true
     stdin_open: true
     entrypoint: /bin/bash

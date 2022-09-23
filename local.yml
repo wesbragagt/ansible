@@ -1,5 +1,8 @@
 - name: Bootstrap a new computer
   hosts: localhost
+  vars:
+    source_key: "./.ssh/id_rsa"
+    dest_key: "{{ lookup('env', 'HOME') }}/.ssh/id_rsa"
   environment:
     HOMEBREW_NO_AUTO_UPDATE: 1
   tasks:

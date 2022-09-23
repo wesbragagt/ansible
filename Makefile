@@ -5,7 +5,7 @@ test:
 	docker compose down && docker compose up --build -d && docker compose exec new_computer bash
 
 all:
-	ansible-playbook local.yml $(DEFAULT_FLAGS)
+	ansible-playbook local.yml $(DEFAULT_FLAGS) $(VAULT_FLAG)
 
 core:
 	ansible-playbook local.yml -t core $(DEFAULT_FLAGS)
