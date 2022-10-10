@@ -1,14 +1,14 @@
 - name: Install productivity packages
-  tags: &productivity_tags ['install', 'optional', 'productivity']
+  tags: &productivity_tags ["install", "optional", "productivity"]
   become: True
-  become_user: '{{ansible_user_id}}'
+  become_user: "{{ansible_user_id}}"
   homebrew:
-    name: ['tmux', 'git-delta', 'stylua']
+    name: ["tmux", "git-delta", "stylua", "gh"]
 
 - name: Add git delta config
   tags: *productivity_tags
   become: True
-  become_user: '{{ansible_user_id}}'
+  become_user: "{{ansible_user_id}}"
   shell:
     cmd: |
       cat >> ~/.gitconfig<< EOF
