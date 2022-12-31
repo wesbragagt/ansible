@@ -7,15 +7,12 @@ brew install cask
 
 apps=(
     slack
-    visual-studio-code  
-    google-chrome
-    postman
-    iterm2
     alacritty
-    runjs
+    visual-studio-code  
+    brave-browser
     raycast
-    drawio
     obsidian
+    karabiner-elements
 )
 
 #install casks
