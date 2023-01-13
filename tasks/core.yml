@@ -6,7 +6,7 @@
 - name: Core dependencies part 2
   tags: *core_tags
   homebrew:
-    name: ['mmv', 'jq', 'lsd']
+    name: ['mmv', 'jq', 'lsd', 'luarocks']
 
 - name: Rust tool chain
   tags: *core_tags
