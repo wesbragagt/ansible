@@ -27,11 +27,6 @@
   shell: npm config set prefix ~/.npm_global
   tags: *tags_for_node_tasks
 
-- name: Install basic npm packages
-  tags: *tags_for_node_tasks
-  shell: npm install --global typescript ts-node yarn jest @fsouza/prettierd eslint_d
-
-
 - name: Install Node & Fnm
   ignore_errors: True
   retries: 3
