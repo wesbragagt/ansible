@@ -39,5 +39,5 @@
 - name: Install Bun
   become: True
   become_user: '{{ansible_user_id}}'
-  shell: curl -fsSL https://bun.sh/install | bash
+  shell: npm install -g bun
   tags: *tags_for_node_tasks
