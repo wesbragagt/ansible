@@ -9,7 +9,7 @@ My automated development. Includes installation of the following tools:
 - npm
 - yarn
 - neovim
-- vimplug
+- packer
 - fzf
 - tmux
 - fd
