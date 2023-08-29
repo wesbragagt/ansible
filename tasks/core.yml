@@ -7,3 +7,8 @@
   tags: *core_tags
   homebrew:
     name: ['mmv', 'jq', 'luarocks']
+
+- name: Install Golang
+  tags: *core_tags
+  homebrew:
+    name: ['go']

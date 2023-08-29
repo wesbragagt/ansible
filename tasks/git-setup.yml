@@ -11,3 +11,7 @@
     scope: global
     value: "wesbragagt"
   tags: *git-setup
+
+- name: Git Host Setup
+  tags: *git-setup
+  shell: ssh-keygen -F github.com || ssh-keyscan github.com >> ~/.ssh/known_hosts

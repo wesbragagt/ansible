@@ -6,6 +6,8 @@
   environment:
     HOMEBREW_NO_AUTO_UPDATE: 1
   tasks:
+    - name: Update Homebrew
+      shell: brew update
     - include: tasks/ssh.yml
     - include: tasks/git-setup.yml
     - include: tasks/core.yml
