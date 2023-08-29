@@ -1,14 +1,13 @@
 - name: Core dependencies part 1
   tags: &core_tags ['install', 'core']
+  async: 1000
+  poll: 0 
   homebrew:
     name: ['fzf', 'ripgrep', 'bat', 'fd']
 
 - name: Core dependencies part 2
+  async: 1000
+  poll: 0 
   tags: *core_tags
   homebrew:
-    name: ['mmv', 'jq', 'luarocks']
-
-- name: Install Golang
-  tags: *core_tags
-  homebrew:
-    name: ['go']
+    name: ['jq', 'luarocks', 'go']

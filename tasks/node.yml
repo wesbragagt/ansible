@@ -1,9 +1,9 @@
-- name: Install NPM
+- name: Install Node, NPM, Fnm
   retries: 3
   become: True
   become_user: '{{ansible_user_id}}'
   homebrew:
-    name: ['npm']
+    name: ['npm', 'node', 'fnm']
   tags: &tags_for_node_tasks ['install', 'node']
 
 - name: Check npm folder
@@ -25,13 +25,4 @@
 - name: Set NPM prefix
   ignore_errors: True
   shell: npm config set prefix ~/.npm_global
-  tags: *tags_for_node_tasks
-
-- name: Install Node & Fnm
-  ignore_errors: True
-  retries: 3
-  become: True
-  become_user: '{{ansible_user_id}}'
-  homebrew:
-    name: ['node', 'fnm']
   tags: *tags_for_node_tasks
