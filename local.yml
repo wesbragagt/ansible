@@ -15,4 +15,3 @@
     - include: tasks/dotfiles.yml
     - include: tasks/node.yml
     - include: tasks/neovim.yml
-    - include: tasks/productivity.yml

@@ -1,13 +1,31 @@
 - name: Core dependencies part 1
   tags: &core_tags ['install', 'core']
-  async: 1000
-  poll: 0 
   homebrew:
     name: ['fzf', 'ripgrep', 'bat', 'fd']
 
 - name: Core dependencies part 2
-  async: 1000
-  poll: 0 
   tags: *core_tags
   homebrew:
-    name: ['jq', 'luarocks', 'go']
+    name: ['tmux' ,'jq', 'git-delta', 'gh']
+
+- name: Add git delta config
+  tags: *core_tags
+  become: True
+  become_user: "{{ansible_user_id}}"
+  shell:
+    cmd: |
+      cat >> ~/.gitconfig<< EOF
+          [core]
+          pager = delta
+
+          [interactive]
+              diffFilter = delta --color-only
+          [delta]
+              navigate = true  # use n and N to move between diff sections
+              line-numbers = true
+              side-by-side = true
+          [merge]
+              conflictstyle = diff3
+          [diff]
+              colorMoved = default
+          EOF

@@ -1,7 +1,8 @@
 - name: Install Neovim
   become: True
   become_user: '{{ansible_user_id}}'
-  shell: brew install neovim
+  homebrew:
+    name: [neovim, luarocks]
   tags: &neovim_tags ['install', 'dotfiles', 'neovim']
 
 - name: Packer Install
