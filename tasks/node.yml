@@ -35,9 +35,3 @@
   homebrew:
     name: ['node', 'fnm']
   tags: *tags_for_node_tasks
-
-- name: Install Bun
-  become: True
-  become_user: '{{ansible_user_id}}'
-  shell: npm install -g bun
-  tags: *tags_for_node_tasks

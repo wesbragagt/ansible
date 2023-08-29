@@ -7,12 +7,3 @@
   tags: *core_tags
   homebrew:
     name: ['mmv', 'jq', 'luarocks']
-
-- name: Rust tool chain
-  tags: *core_tags
-  shell: curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-
-- name: Golang
-  tags: *core_tags
-  homebrew:
-    name: ['go']
