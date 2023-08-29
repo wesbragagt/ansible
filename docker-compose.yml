@@ -8,3 +8,4 @@ services:
     tty: true
     stdin_open: true
     entrypoint: /bin/bash
+    working_dir: /home/wesbragagt/dev/ansible
