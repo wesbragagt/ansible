@@ -28,5 +28,5 @@
   tags: *tags_for_node_tasks
 
 - name: Install Bun
-  shell: npm install bun -g
+  shell: brew install unzip && curl -fsSL https://bun.sh/install | bash
   tags: *tags_for_node_tasks
