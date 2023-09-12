@@ -4,7 +4,7 @@
   become_user: '{{ansible_user_id}}'
   homebrew:
     name: ['npm', 'node', 'fnm']
-  tags: *tags_for_node_tasks
+  tags: &tags_for_node_tasks ["install", "node"]
 
 - name: Check npm folder
   ignore_errors: True
