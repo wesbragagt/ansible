@@ -4,7 +4,7 @@
   become_user: '{{ansible_user_id}}'
   homebrew:
     name: ['npm', 'node', 'fnm']
-  tags: &tags_for_node_tasks ['install', 'node']
+  tags: *tags_for_node_tasks
 
 - name: Check npm folder
   ignore_errors: True
@@ -25,4 +25,8 @@
 - name: Set NPM prefix
   ignore_errors: True
   shell: npm config set prefix ~/.npm_global
+  tags: *tags_for_node_tasks
+
+- name: Install Bun
+  shell: npm install bun -g
   tags: *tags_for_node_tasks
