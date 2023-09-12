@@ -39,7 +39,7 @@
   become: True
   become_user: '{{ansible_user_id}}'
   tags: *tags_for_zsh_tasks
-  shell: git clone https://github.com/zsh-users/zsh-autosuggestions ~/{{ansible_user_id}}/.oh-my-zsh/custom/plugins/zsh-autosuggestions
+  shell: git clone https://github.com/zsh-users/zsh-autosuggestions ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions
   when: not autosuggestions.stat.exists
 
 - name: Check that the fzf-tab exists
