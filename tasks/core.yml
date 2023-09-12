@@ -19,12 +19,6 @@
   homebrew:
     name: ['golang']
 
-- name: Rust
-  become: True
-  become_user: "{{ansible_user_id}}"
-  tags: *core_tags
-  shell: curl https://sh.rustup.rs -sSf | sh
-
 - name: Add git delta config
   tags: *core_tags
   become: True
