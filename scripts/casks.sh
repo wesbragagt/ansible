@@ -18,3 +18,9 @@ apps=(
 #install casks
 echo "Installing cask apps..."
 brew install --cask ${apps[@]} --appdir=/Applications
+
+# Wezterm Nightly
+brew tap homebrew/cask-versions
+brew install --cask wezterm-nightly
+
+
