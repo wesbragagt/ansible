@@ -11,7 +11,7 @@
   tags: *dotfiles_tags
 
 - name: Cloning .dotfiles
-  shell: git clone https://github.com/wesbragagt/.dotfiles.git ~/.dotfiles
+  shell: git clone --recurse-submodules https://github.com/wesbragagt/.dotfiles.git ~/.dotfiles
   when: not dotfiles_check.stat.exists
   tags: *dotfiles_tags
 
