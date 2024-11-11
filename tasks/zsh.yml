@@ -41,3 +41,19 @@
   tags: *tags_for_zsh_tasks
   shell: git clone https://github.com/zsh-users/zsh-autosuggestions ~/.zsh/zsh-autosuggestions/
   when: not autosuggestions.stat.exists
+
+# fzf tab completion git clone https://github.com/Aloxaf/fzf-tab ~/somewhere
+- name: Check that the fzf tab completion exists
+  become: True
+  become_user: '{{ansible_user_id}}'
+  tags: *tags_for_zsh_tasks
+  stat: 
+    path: '~/{{ansible_user_id}}/.zsh/fzf-tab'
+  register: fzf_tab
+
+- name: FZF Tab
+  become: True
+  become_user: '{{ansible_user_id}}'
+  tags: *tags_for_zsh_tasks
+  shell: git clone https://github.com/Aloxaf/fzf-tab ~/.zsh/fzf-tab/
+  when: not fzf_tab.stat.exists
