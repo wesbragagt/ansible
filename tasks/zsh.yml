@@ -17,12 +17,12 @@
   tags: *tags_for_zsh_tasks
   stat:
     path: '/home/{{ansible_user_id}}/.oh-my-zsh'
-  register: oh_my_stats
+  register: starship_stat
 
-- name: Oh-My-Zsh
+- name: Starship
   tags: *tags_for_zsh_tasks
-  shell: curl -L https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh > ~/.oh-my-installer && chmod +x ~/.oh-my-installer && ~/.oh-my-installer
-  when: not oh_my_stats.stat.exists
+  shell: curl -sS https://starship.rs/install.sh | sh
+  when: not starship_stat.stat.exists
   become: True
   become_user: '{{ansible_user_id}}'
   ignore_errors: True
@@ -32,28 +32,12 @@
   become_user: '{{ansible_user_id}}'
   tags: *tags_for_zsh_tasks
   stat:
-    path: '~/{{ansible_user_id}}/.oh-my-zsh/custom/plugins/zsh-autosuggestions'
+    path: '~/{{ansible_user_id}}/.zsh/zsh-autosuggestions'
   register: autosuggestions
 
 - name: Auto Suggestions
   become: True
   become_user: '{{ansible_user_id}}'
   tags: *tags_for_zsh_tasks
-  shell: git clone https://github.com/zsh-users/zsh-autosuggestions ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions
+  shell: git clone https://github.com/zsh-users/zsh-autosuggestions ~/.zsh/zsh-autosuggestions/
   when: not autosuggestions.stat.exists
-
-- name: Check that the fzf-tab exists
-  become: True
-  become_user: '{{ansible_user_id}}'
-  tags: *tags_for_zsh_tasks
-  stat:
-    path: '~/{{ansible_user_id}}/.oh-my-zsh/custom/plugins/fzf-tab'
-  register: fzf_tab
-
-
-- name: Fzf tab
-  become: True
-  become_user: '{{ansible_user_id}}'
-  tags: *tags_for_zsh_tasks
-  shell: git clone https://github.com/Aloxaf/fzf-tab ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/fzf-tab
-  when: not fzf_tab.stat.exists
