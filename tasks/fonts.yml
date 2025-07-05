@@ -1,10 +1,20 @@
-- name: Install Fonts
+- name: Install Fonts (macOS)
   become: true
   become_user: "{{ansible_user_id}}"
   shell: |
     brew tap homebrew/cask-fonts
-    brew install --cask font-hack-nerd-font font-fira-code-nerd-font
-  tags:
+    brew install --cask --force font-hack-nerd-font font-fira-code-nerd-font
+  tags: &fonts_tags
     - install
     - fonts
     - optional
+  when: ansible_distribution == "MacOSX"
+
+- name: Install Fonts (Arch Linux)
+  become: true
+  community.general.pacman:
+    name: ['ttf-hack', 'ttf-fira-code']
+    state: present
+    update_cache: true
+  tags: *fonts_tags
+  when: ansible_distribution == "Archlinux"

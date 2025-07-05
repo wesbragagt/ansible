@@ -1,8 +1,27 @@
-- name: Install ZSH
+- name: Load OS-specific variables
+  include_vars: "{{ item }}"
+  with_first_found:
+    - "vars/os_{{ ansible_facts['distribution'] }}.yml"
+    - "vars/os_defaults.yml"
   tags: &tags_for_zsh_tasks ['zsh']
+
+- name: Install ZSH (macOS)
+  community.general.homebrew:
+    name: "{{ zsh_packages }}"
+    state: "{{ package_manager_state }}"
   become: True
-  become_user: '{{ansible_user_id}}'
-  homebrew: name=zsh
+  become_user: "{{ ansible_user_id }}"
+  tags: *tags_for_zsh_tasks
+  when: ansible_distribution == "MacOSX"
+
+- name: Install ZSH (Arch Linux)
+  community.general.pacman:
+    name: "{{ zsh_packages }}"
+    state: "{{ package_manager_state }}"
+    update_cache: "{{ package_manager_update_cache }}"
+  become: True
+  tags: *tags_for_zsh_tasks
+  when: ansible_distribution == "Archlinux"
 
 # This will set the variable the_user to the current running user, but will change the shell of that user using root.
 # https://stackoverflow.com/questions/43560657/edit-current-users-shell-with-ansible
@@ -11,28 +30,45 @@
   become: True
   user:
     name: '{{ ansible_user_id }}'
-    shell: /bin/zsh
+    shell: '{{ system_shell_path }}'
 
-- name: Check that the oh-my-zsh exists
+- name: Check that starship is installed
   tags: *tags_for_zsh_tasks
-  stat:
-    path: '/home/{{ansible_user_id}}/.oh-my-zsh'
-  register: starship_stat
+  shell: which starship
+  register: starship_check
+  changed_when: false
+  failed_when: false
 
-- name: Starship
+- name: Install Starship via package manager (Arch Linux)
+  community.general.pacman:
+    name: "{{ starship_package }}"
+    state: "{{ package_manager_state }}"
+    update_cache: "{{ package_manager_update_cache }}"
+  become: True
   tags: *tags_for_zsh_tasks
-  shell: curl -sS https://starship.rs/install.sh | sh
-  when: not starship_stat.stat.exists
+  when: starship_check.rc != 0 and starship_install_method == "package" and ansible_distribution == "Archlinux"
+
+- name: Install Starship via curl (macOS)
+  shell: "{{ starship_install_command }}"
+  become: True
+  become_user: "{{ ansible_user_id }}"
+  tags: *tags_for_zsh_tasks
+  when: starship_check.rc != 0 and starship_install_method == "curl" and ansible_distribution == "MacOSX"
+
+- name: Remove oh-my-zsh (deprecated)
+  tags: *tags_for_zsh_tasks
+  file:
+    path: '{{ ansible_user_dir }}/.oh-my-zsh'
+    state: absent
   become: True
   become_user: '{{ansible_user_id}}'
-  ignore_errors: True
 
 - name: Check that the autosuggestions exists
   become: True
   become_user: '{{ansible_user_id}}'
   tags: *tags_for_zsh_tasks
   stat:
-    path: '~/{{ansible_user_id}}/.zsh/zsh-autosuggestions'
+    path: '{{ ansible_user_dir }}/.zsh/zsh-autosuggestions'
   register: autosuggestions
 
 - name: Auto Suggestions
@@ -48,7 +84,7 @@
   become_user: '{{ansible_user_id}}'
   tags: *tags_for_zsh_tasks
   stat: 
-    path: '~/{{ansible_user_id}}/.zsh/fzf-tab'
+    path: '{{ ansible_user_dir }}/.zsh/fzf-tab'
   register: fzf_tab
 
 - name: FZF Tab

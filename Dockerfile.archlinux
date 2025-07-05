@@ -1,0 +1,49 @@
+# Arch Linux testing environment for cross-platform Ansible playbooks
+# This container tests the Ansible playbooks in a true Arch Linux environment
+# using pacman as the package manager to validate Arch Linux scenarios
+FROM archlinux/archlinux:latest
+
+# Update system and install base packages
+RUN pacman -Syu --noconfirm && \
+    pacman -S --noconfirm \
+    git \
+    sudo \
+    vim \
+    curl \
+    python \
+    python-pip \
+    base-devel \
+    which \
+    openssh
+
+# Install Ansible via pacman (system package manager)
+RUN pacman -S --noconfirm ansible
+
+# Create wesbragagt user with sudo privileges (matching Ubuntu setup)
+RUN useradd -ms /bin/bash wesbragagt && \
+    usermod -aG wheel wesbragagt
+
+# Configure sudo for wheel group and wesbragagt user
+RUN echo '%wheel ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers && \
+    echo 'wesbragagt ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers
+
+# Set as default user
+USER wesbragagt
+ENV HOME="/home/wesbragagt"
+
+# Set working directory
+WORKDIR /home/wesbragagt
+
+# Install Ansible collections as user
+RUN ansible-galaxy collection install community.general
+
+# Create a test script to validate the environment
+RUN echo '#!/bin/bash' > /home/wesbragagt/validate-arch.sh && \
+    echo 'echo "=== Arch Linux Environment Validation ==="' >> /home/wesbragagt/validate-arch.sh && \
+    echo 'echo "OS: $(uname -a)"' >> /home/wesbragagt/validate-arch.sh && \
+    echo 'echo "Distribution: $(cat /etc/os-release | grep PRETTY_NAME)"' >> /home/wesbragagt/validate-arch.sh && \
+    echo 'echo "Pacman version: $(pacman --version | head -1)"' >> /home/wesbragagt/validate-arch.sh && \
+    echo 'echo "Ansible version: $(ansible --version | head -1)"' >> /home/wesbragagt/validate-arch.sh && \
+    echo 'echo "Available collections:"' >> /home/wesbragagt/validate-arch.sh && \
+    echo 'ansible-galaxy collection list' >> /home/wesbragagt/validate-arch.sh && \
+    chmod +x /home/wesbragagt/validate-arch.sh

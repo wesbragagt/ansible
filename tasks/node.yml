@@ -1,10 +1,45 @@
-- name: Install Node, NPM, Fnm
+- name: Load OS-specific variables
+  include_vars: "{{ item }}"
+  with_first_found:
+    - "vars/os_{{ ansible_facts['distribution'] }}.yml"
+    - "vars/os_defaults.yml"
+  tags: &tags_for_node_tasks ["install", "node"]
+
+- name: Install Node.js packages (macOS)
+  community.general.homebrew:
+    name: "{{ node_packages }}"
+    state: "{{ package_manager_state }}"
   retries: 3
   become: True
-  become_user: '{{ansible_user_id}}'
-  homebrew:
-    name: ['npm', 'node', 'fnm']
-  tags: &tags_for_node_tasks ["install", "node"]
+  become_user: "{{ ansible_user_id }}"
+  tags: *tags_for_node_tasks
+  when: ansible_distribution == "MacOSX"
+
+- name: Install Node.js packages (Arch Linux)
+  community.general.pacman:
+    name: "{{ node_packages }}"
+    state: "{{ package_manager_state }}"
+    update_cache: "{{ package_manager_update_cache }}"
+  retries: 3
+  become: True
+  tags: *tags_for_node_tasks
+  when: ansible_distribution == "Archlinux"
+
+- name: Install fnm via package manager (macOS)
+  community.general.homebrew:
+    name: fnm
+    state: "{{ package_manager_state }}"
+  become: True
+  become_user: "{{ ansible_user_id }}"
+  tags: *tags_for_node_tasks
+  when: fnm_install_method == "package" and ansible_distribution == "MacOSX"
+
+- name: Install fnm via curl (Arch Linux)
+  shell: "{{ fnm_install_command }}"
+  tags: *tags_for_node_tasks
+  become: True
+  become_user: "{{ ansible_user_id }}"
+  when: fnm_install_method == "curl" and ansible_distribution == "Archlinux"
 
 - name: Check npm folder
   ignore_errors: True
@@ -27,6 +62,13 @@
   shell: npm config set prefix ~/.npm_global
   tags: *tags_for_node_tasks
 
-- name: Install Bun
-  shell: brew install unzip && curl -fsSL https://bun.sh/install | bash
+- name: Install Bun (macOS)
+  shell: "{{ bun_install_command }}"
   tags: *tags_for_node_tasks
+  when: ansible_distribution == "MacOSX"
+
+- name: Install Bun (Arch Linux)
+  shell: "{{ bun_install_command }}"
+  tags: *tags_for_node_tasks
+  become: true
+  when: ansible_distribution == "Archlinux"
