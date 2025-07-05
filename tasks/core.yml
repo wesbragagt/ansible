@@ -5,23 +5,14 @@
     - "vars/os_defaults.yml"
   tags: &core_tags ['install', 'core']
 
-- name: Install core packages (macOS)
-  community.general.homebrew:
+- name: Install core packages
+  "{{ package_manager_module }}":
     name: "{{ core_packages }}"
     state: "{{ package_manager_state }}"
+    update_cache: "{{ package_manager_update_cache | default(omit) }}"
   become: True
-  become_user: "{{ ansible_user_id }}"
+  become_user: "{{ ansible_user_id if become_user_needed else omit }}"
   tags: *core_tags
-  when: ansible_distribution == "MacOSX"
-
-- name: Install core packages (Arch Linux)
-  community.general.pacman:
-    name: "{{ core_packages }}"
-    state: "{{ package_manager_state }}"
-    update_cache: "{{ package_manager_update_cache }}"
-  become: True
-  tags: *core_tags
-  when: ansible_distribution == "Archlinux"
 
 - name: Add git delta config
   tags: *core_tags
