@@ -1,26 +1,33 @@
+- name: Load OS-specific variables
+  include_vars: "{{ item }}"
+  with_first_found:
+    - "vars/os_{{ ansible_facts['distribution'] }}.yml"
+    - "vars/os_defaults.yml"
+  tags: &neovim_tags ['install', 'dotfiles', 'neovim']
+
 - name: Install Xcode Command Line Tools (macOS)
   become: False
   shell: xcode-select --install
   register: xcode_install
   failed_when: xcode_install.rc != 0 and "already installed" not in xcode_install.stderr
-  tags: &neovim_tags ['install', 'dotfiles', 'neovim']
+  tags: *neovim_tags
   when: ansible_distribution == "MacOSX"
 
 - name: Install Neovim build dependencies (macOS)
+  community.general.homebrew:
+    name: "{{ neovim_build_deps }}"
+    state: "{{ package_manager_state }}"
   become: True
-  become_user: '{{ansible_user_id}}'
-  homebrew:
-    name: [ninja, cmake, gettext, curl]
-    state: present
+  become_user: "{{ ansible_user_id }}"
   tags: *neovim_tags
   when: ansible_distribution == "MacOSX"
 
 - name: Install Neovim build dependencies (Arch Linux)
-  become: True
   community.general.pacman:
-    name: [base-devel, cmake, ninja, curl]
-    state: present
-    update_cache: true
+    name: "{{ neovim_build_deps }}"
+    state: "{{ package_manager_state }}"
+    update_cache: "{{ package_manager_update_cache }}"
+  become: True
   tags: *neovim_tags
   when: ansible_distribution == "Archlinux"
 
@@ -36,7 +43,7 @@
   git:
     repo: https://github.com/neovim/neovim.git
     dest: "{{ ansible_user_dir }}/neovim"
-    version: stable
+    version: v0.11.2
     depth: 1
   when: not neovim_src_check.stat.exists
   tags: *neovim_tags
@@ -47,7 +54,7 @@
   git:
     repo: https://github.com/neovim/neovim.git
     dest: "{{ ansible_user_dir }}/neovim"
-    version: stable
+    version: v0.11.2
     force: yes
   when: neovim_src_check.stat.exists
   tags: *neovim_tags

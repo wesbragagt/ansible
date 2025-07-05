@@ -1,0 +1,47 @@
+---
+# Arch Linux-specific variables
+package_manager: pacman
+package_manager_module: community.general.pacman
+package_manager_state: present
+package_manager_update_cache: true
+become_user_needed: false
+
+# Core packages mapping
+core_packages:
+  - fzf
+  - ripgrep
+  - bat
+  - fd
+  - wget
+  - tmux
+  - jq
+  - git-delta
+  - github-cli  # Note: different from macOS 'gh'
+  - zoxide
+  - go  # Note: different from macOS 'golang'
+
+# ZSH packages
+zsh_packages:
+  - zsh
+
+# Node.js packages
+node_packages:
+  - npm
+  - nodejs  # Note: different from macOS 'node'
+
+# Neovim build dependencies
+neovim_build_deps:
+  - base-devel
+  - cmake
+  - ninja
+  - curl
+
+# Installation methods
+starship_install_method: package
+starship_package: starship
+bun_install_command: "pacman -S --needed --noconfirm unzip && curl -fsSL https://bun.sh/install | bash"
+fnm_install_method: curl
+fnm_install_command: "curl -fsSL https://fnm.vercel.app/install | bash"
+
+# System shell path
+system_shell_path: /bin/zsh

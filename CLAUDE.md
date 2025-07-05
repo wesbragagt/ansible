@@ -140,3 +140,11 @@ The project includes comprehensive testing infrastructure:
   - Use the file with: `ansible-playbook local.yml --vault-password-file .vault-pass`
 - Never commit vault password files to version control
 - Rotate vault passwords periodically for enhanced security
+
+## Static Checks
+
+### Recommended Static Analysis Commands
+- Run Ansible linter: `ansible-lint local.yml`
+- Validate YAML syntax: `yamllint .`
+- Check Ansible playbook syntax: `ansible-playbook --syntax-check local.yml`
+- Perform dry-run for validation: `ansible-playbook local.yml --check`

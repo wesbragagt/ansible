@@ -1,52 +1,26 @@
-- name: Core dependencies part 1 (macOS)
-  become: True
-  become_user: "{{ansible_user_id}}"
+- name: Load OS-specific variables
+  include_vars: "{{ item }}"
+  with_first_found:
+    - "vars/os_{{ ansible_facts['distribution'] }}.yml"
+    - "vars/os_defaults.yml"
   tags: &core_tags ['install', 'core']
-  homebrew:
-    name: ['fzf', 'ripgrep', 'bat', 'fd', 'wget']
+
+- name: Install core packages (macOS)
+  community.general.homebrew:
+    name: "{{ core_packages }}"
+    state: "{{ package_manager_state }}"
+  become: True
+  become_user: "{{ ansible_user_id }}"
+  tags: *core_tags
   when: ansible_distribution == "MacOSX"
 
-- name: Core dependencies part 1 (Arch Linux)
-  become: True
-  tags: *core_tags
+- name: Install core packages (Arch Linux)
   community.general.pacman:
-    name: ['fzf', 'ripgrep', 'bat', 'fd', 'wget']
-    state: present
-    update_cache: true
-  when: ansible_distribution == "Archlinux"
-
-- name: Core dependencies part 2 (macOS)
-  become: True
-  become_user: "{{ansible_user_id}}"
-  tags: *core_tags
-  homebrew:
-    name: ['tmux' ,'jq', 'git-delta', 'gh', 'zoxide']
-  when: ansible_distribution == "MacOSX"
-
-- name: Core dependencies part 2 (Arch Linux)
+    name: "{{ core_packages }}"
+    state: "{{ package_manager_state }}"
+    update_cache: "{{ package_manager_update_cache }}"
   become: True
   tags: *core_tags
-  community.general.pacman:
-    name: ['tmux' ,'jq', 'git-delta', 'github-cli', 'zoxide']
-    state: present
-    update_cache: true
-  when: ansible_distribution == "Archlinux"
-
-- name: Golang (macOS)
-  become: True
-  become_user: "{{ansible_user_id}}"
-  tags: *core_tags
-  homebrew:
-    name: ['golang']
-  when: ansible_distribution == "MacOSX"
-
-- name: Golang (Arch Linux)
-  become: True
-  tags: *core_tags
-  community.general.pacman:
-    name: ['go']
-    state: present
-    update_cache: true
   when: ansible_distribution == "Archlinux"
 
 - name: Add git delta config
