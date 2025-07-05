@@ -1,3 +1,6 @@
+# Ubuntu-based testing environment for cross-platform Ansible playbooks
+# This container tests the Ansible playbooks in a Linux environment
+# using Ubuntu as the base OS with linuxbrew for package management
 FROM linuxbrew/brew
 
 RUN apt-get update && \

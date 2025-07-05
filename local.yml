@@ -1,17 +1,37 @@
 - name: Bootstrap a new computer
   hosts: localhost
+  gather_facts: yes
   vars:
     source_key: "./.ssh/id_rsa"
     dest_key: "{{ lookup('env', 'HOME') }}/.ssh/id_rsa"
-  environment:
-    HOMEBREW_NO_AUTO_UPDATE: 1
   tasks:
-    - name: Update Homebrew
+    - name: Update Homebrew (macOS)
       shell: brew update
-    - include: tasks/ssh.yml
-    - include: tasks/git-setup.yml
-    - include: tasks/core.yml
-    - include: tasks/zsh.yml
-    - include: tasks/dotfiles.yml
-    - include: tasks/node.yml
-    - include: tasks/neovim.yml
+      when: ansible_distribution == "MacOSX"
+      environment:
+        HOMEBREW_NO_AUTO_UPDATE: '1'
+    
+    - name: Update package cache (Arch Linux)
+      community.general.pacman:
+        update_cache: true
+      when: ansible_distribution == "Archlinux"
+      become: true
+    
+    - include_tasks: tasks/homebrew.yml
+      tags: ['homebrew']
+    - include_tasks: tasks/ssh.yml
+      tags: ['ssh', 'dotfiles']
+    - include_tasks: tasks/git-setup.yml
+      tags: ['git-setup']
+    - include_tasks: tasks/core.yml
+      tags: ['core', 'install']
+    - include_tasks: tasks/zsh.yml
+      tags: ['zsh']
+    - include_tasks: tasks/dotfiles.yml
+      tags: ['dotfiles']
+    - include_tasks: tasks/node.yml
+      tags: ['node']
+    - include_tasks: tasks/neovim.yml
+      tags: ['neovim', 'install', 'dotfiles']
+    - include_tasks: tasks/fonts.yml
+      tags: ['fonts', 'install', 'optional']

@@ -1,14 +1,89 @@
-- name: Install Neovim
+- name: Install Xcode Command Line Tools (macOS)
+  become: False
+  shell: xcode-select --install
+  register: xcode_install
+  failed_when: xcode_install.rc != 0 and "already installed" not in xcode_install.stderr
+  tags: &neovim_tags ['install', 'dotfiles', 'neovim']
+  when: ansible_distribution == "MacOSX"
+
+- name: Install Neovim build dependencies (macOS)
   become: True
   become_user: '{{ansible_user_id}}'
   homebrew:
-    name: [neovim, luarocks, 'gnu-sed']
-  tags: &neovim_tags ['install', 'dotfiles', 'neovim']
+    name: [ninja, cmake, gettext, curl]
+    state: present
+  tags: *neovim_tags
+  when: ansible_distribution == "MacOSX"
 
-- name: Packer Install
+- name: Install Neovim build dependencies (Arch Linux)
+  become: True
+  community.general.pacman:
+    name: [base-devel, cmake, ninja, curl]
+    state: present
+    update_cache: true
+  tags: *neovim_tags
+  when: ansible_distribution == "Archlinux"
+
+- name: Check if neovim source directory exists
+  stat:
+    path: "{{ ansible_user_dir }}/neovim"
+  register: neovim_src_check
+  tags: *neovim_tags
+
+- name: Clone neovim repository
   become: True
   become_user: '{{ansible_user_id}}'
-  shell: nvim --headless -c 'autocmd User PackerComplete quitall' -c 'PackerSync'
+  git:
+    repo: https://github.com/neovim/neovim.git
+    dest: "{{ ansible_user_dir }}/neovim"
+    version: stable
+    depth: 1
+  when: not neovim_src_check.stat.exists
   tags: *neovim_tags
-  ignore_errors: True
 
+- name: Update neovim repository
+  become: True
+  become_user: '{{ansible_user_id}}'
+  git:
+    repo: https://github.com/neovim/neovim.git
+    dest: "{{ ansible_user_dir }}/neovim"
+    version: stable
+    force: yes
+  when: neovim_src_check.stat.exists
+  tags: *neovim_tags
+
+- name: Clean previous build
+  become: True
+  become_user: '{{ansible_user_id}}'
+  shell: make distclean
+  args:
+    chdir: "{{ ansible_user_dir }}/neovim"
+  ignore_errors: true
+  tags: *neovim_tags
+
+- name: Build neovim from source
+  become: True
+  become_user: '{{ansible_user_id}}'
+  shell: make CMAKE_BUILD_TYPE=RelWithDebInfo
+  args:
+    chdir: "{{ ansible_user_dir }}/neovim"
+  tags: *neovim_tags
+  register: neovim_build
+  failed_when: neovim_build.rc != 0
+
+- name: Install neovim system-wide
+  become: True
+  shell: make install
+  args:
+    chdir: "{{ ansible_user_dir }}/neovim"
+  tags: *neovim_tags
+
+- name: Verify neovim installation
+  shell: nvim --version
+  register: nvim_version
+  tags: *neovim_tags
+
+- name: Display neovim version
+  debug:
+    msg: "Neovim installed successfully: {{ nvim_version.stdout_lines[0] }}"
+  tags: *neovim_tags

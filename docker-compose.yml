@@ -1,7 +1,8 @@
 version: '3.0'
 services:
-  new_computer:
-    container_name: new_mac
+  # Ubuntu-based testing environment (simulates macOS with Linuxbrew)
+  ubuntu_test:
+    container_name: ubuntu_dev_test
     build: .
     volumes:
       - ".:/home/wesbragagt/dev/ansible"
@@ -9,3 +10,22 @@ services:
     stdin_open: true
     entrypoint: /bin/bash
     working_dir: /home/wesbragagt/dev/ansible
+    environment:
+      - ANSIBLE_HOST_KEY_CHECKING=False
+      - ANSIBLE_STDOUT_CALLBACK=yaml
+  
+  # Arch Linux testing environment (true Arch Linux with pacman)
+  arch_test:
+    container_name: arch_dev_test
+    build:
+      context: .
+      dockerfile: Dockerfile.archlinux
+    volumes:
+      - ".:/home/wesbragagt/dev/ansible"
+    tty: true
+    stdin_open: true
+    entrypoint: /bin/bash
+    working_dir: /home/wesbragagt/dev/ansible
+    environment:
+      - ANSIBLE_HOST_KEY_CHECKING=False
+      - ANSIBLE_STDOUT_CALLBACK=yaml

@@ -1,23 +1,53 @@
-- name: Core dependencies part 1
+- name: Core dependencies part 1 (macOS)
   become: True
   become_user: "{{ansible_user_id}}"
   tags: &core_tags ['install', 'core']
   homebrew:
     name: ['fzf', 'ripgrep', 'bat', 'fd', 'wget']
+  when: ansible_distribution == "MacOSX"
 
-- name: Core dependencies part 2
+- name: Core dependencies part 1 (Arch Linux)
+  become: True
+  tags: *core_tags
+  community.general.pacman:
+    name: ['fzf', 'ripgrep', 'bat', 'fd', 'wget']
+    state: present
+    update_cache: true
+  when: ansible_distribution == "Archlinux"
+
+- name: Core dependencies part 2 (macOS)
   become: True
   become_user: "{{ansible_user_id}}"
   tags: *core_tags
   homebrew:
     name: ['tmux' ,'jq', 'git-delta', 'gh', 'zoxide']
+  when: ansible_distribution == "MacOSX"
 
-- name: Golang
+- name: Core dependencies part 2 (Arch Linux)
+  become: True
+  tags: *core_tags
+  community.general.pacman:
+    name: ['tmux' ,'jq', 'git-delta', 'github-cli', 'zoxide']
+    state: present
+    update_cache: true
+  when: ansible_distribution == "Archlinux"
+
+- name: Golang (macOS)
   become: True
   become_user: "{{ansible_user_id}}"
   tags: *core_tags
   homebrew:
     name: ['golang']
+  when: ansible_distribution == "MacOSX"
+
+- name: Golang (Arch Linux)
+  become: True
+  tags: *core_tags
+  community.general.pacman:
+    name: ['go']
+    state: present
+    update_cache: true
+  when: ansible_distribution == "Archlinux"
 
 - name: Add git delta config
   tags: *core_tags

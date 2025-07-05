@@ -1,10 +1,28 @@
-- name: Install Node, NPM, Fnm
+- name: Install Node, NPM, Fnm (macOS)
   retries: 3
   become: True
   become_user: '{{ansible_user_id}}'
   homebrew:
     name: ['npm', 'node', 'fnm']
   tags: &tags_for_node_tasks ["install", "node"]
+  when: ansible_distribution == "MacOSX"
+
+- name: Install Node, NPM (Arch Linux)
+  retries: 3
+  become: True
+  community.general.pacman:
+    name: ['npm', 'nodejs']
+    state: present
+    update_cache: true
+  tags: *tags_for_node_tasks
+  when: ansible_distribution == "Archlinux"
+
+- name: Install fnm via curl (Arch Linux)
+  shell: curl -fsSL https://fnm.vercel.app/install | bash
+  tags: *tags_for_node_tasks
+  become: True
+  become_user: '{{ansible_user_id}}'
+  when: ansible_distribution == "Archlinux"
 
 - name: Check npm folder
   ignore_errors: True
@@ -27,6 +45,13 @@
   shell: npm config set prefix ~/.npm_global
   tags: *tags_for_node_tasks
 
-- name: Install Bun
+- name: Install Bun (macOS)
   shell: brew install unzip && curl -fsSL https://bun.sh/install | bash
   tags: *tags_for_node_tasks
+  when: ansible_distribution == "MacOSX"
+
+- name: Install Bun (Arch Linux)
+  shell: pacman -S --needed --noconfirm unzip && curl -fsSL https://bun.sh/install | bash
+  tags: *tags_for_node_tasks
+  become: true
+  when: ansible_distribution == "Archlinux"

@@ -1,8 +1,18 @@
-- name: Installing stow
+- name: Installing stow (macOS)
   become: True
   become_user: '{{ansible_user_id}}'
   shell: brew install stow
   tags: &dotfiles_tags ['install', 'dotfiles']
+  when: ansible_distribution == "MacOSX"
+
+- name: Installing stow (Arch Linux)
+  become: True
+  community.general.pacman:
+    name: stow
+    state: present
+    update_cache: true
+  tags: *dotfiles_tags
+  when: ansible_distribution == "Archlinux"
 
 - name: Check for dotfiles cloned
   stat:
