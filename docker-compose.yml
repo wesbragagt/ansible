@@ -1,4 +1,3 @@
-version: '3.0'
 services:
   # Ubuntu-based testing environment (simulates macOS with Linuxbrew)
   ubuntu_test:
@@ -20,6 +19,22 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.archlinux
+    volumes:
+      - ".:/home/wesbragagt/dev/ansible"
+    tty: true
+    stdin_open: true
+    entrypoint: /bin/bash
+    working_dir: /home/wesbragagt/dev/ansible
+    environment:
+      - ANSIBLE_HOST_KEY_CHECKING=False
+      - ANSIBLE_STDOUT_CALLBACK=yaml
+  
+  # Fedora testing environment (true Fedora with DNF)
+  fedora_test:
+    container_name: fedora_dev_test
+    build:
+      context: .
+      dockerfile: Dockerfile.fedora
     volumes:
       - ".:/home/wesbragagt/dev/ansible"
     tty: true

@@ -14,6 +14,15 @@
   tags: *dotfiles_tags
   when: ansible_distribution == "Archlinux"
 
+- name: Installing stow (Fedora)
+  become: True
+  ansible.builtin.dnf:
+    name: stow
+    state: present
+    update_cache: true
+  tags: *dotfiles_tags
+  when: ansible_distribution == "Fedora"
+
 - name: Check for dotfiles cloned
   stat:
     path: ~/.dotfiles

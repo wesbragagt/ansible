@@ -17,6 +17,12 @@
       when: ansible_distribution == "Archlinux"
       become: true
     
+    - name: Update package cache (Fedora)
+      ansible.builtin.dnf:
+        update_cache: true
+      when: ansible_distribution == "Fedora"
+      become: true
+    
     - include_tasks: tasks/homebrew.yml
       tags: ['homebrew']
     - include_tasks: tasks/ssh.yml

@@ -31,6 +31,15 @@
   tags: *neovim_tags
   when: ansible_distribution == "Archlinux"
 
+- name: Install Neovim build dependencies (Fedora)
+  ansible.builtin.dnf:
+    name: "{{ neovim_build_deps }}"
+    state: "{{ package_manager_state }}"
+    update_cache: "{{ package_manager_update_cache }}"
+  become: True
+  tags: *neovim_tags
+  when: ansible_distribution == "Fedora"
+
 - name: Check if neovim source directory exists
   stat:
     path: "{{ ansible_user_dir }}/neovim"

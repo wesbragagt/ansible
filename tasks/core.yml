@@ -6,7 +6,8 @@
   tags: &core_tags ['install', 'core']
 
 - name: Install core packages
-  "{{ package_manager_module }}":
+  action:
+    module: "{{ package_manager_module }}"
     name: "{{ core_packages }}"
     state: "{{ package_manager_state }}"
     update_cache: "{{ package_manager_update_cache | default(omit) }}"

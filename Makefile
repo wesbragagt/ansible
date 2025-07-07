@@ -1,5 +1,5 @@
-# Cross-platform Ansible automation tool for macOS and Arch Linux
-# All commands work on both platforms with automatic OS detection
+# Cross-platform Ansible automation tool for macOS, Arch Linux, and Fedora
+# All commands work on all platforms with automatic OS detection
 
 DEFAULT_FLAGS="--ask-become-pass"
 VAULT_FLAG="--ask-vault-pass"

@@ -4,14 +4,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is an Ansible-based development environment automation tool that sets up macOS and Arch Linux machines with essential development tools and configurations. The project uses Ansible playbooks to install and configure tools like homebrew/pacman, zsh, neovim, nodejs, tmux, and various CLI utilities.
+This is an Ansible-based development environment automation tool that sets up macOS, Arch Linux, and Fedora machines with essential development tools and configurations. The project uses Ansible playbooks to install and configure tools like homebrew/pacman/dnf, zsh, neovim, nodejs, tmux, and various CLI utilities.
 
 ## Key Commands
 
 ### Running the Full Setup
 ```bash
 # Complete setup (requires sudo password and vault password)
-# Works on both macOS and Arch Linux
+# Works on macOS, Arch Linux, and Fedora
 make all
 # or
 ansible-playbook local.yml --ask-become-pass --ask-vault-pass
@@ -46,16 +46,18 @@ make fonts
 
 ### Testing
 ```bash
-# Cross-platform testing (both Ubuntu and Arch Linux)
+# Cross-platform testing (Ubuntu, Arch Linux, and Fedora)
 ./test-both.sh
 
 # Test specific platforms
 ./test-ubuntu.sh --validate    # Ubuntu environment (macOS simulation)
 ./test-arch.sh --validate      # Arch Linux environment
+./test-fedora.sh --validate    # Fedora environment
 
 # Interactive testing
 ./test-ubuntu.sh --interactive
 ./test-arch.sh --interactive
+./test-fedora.sh --interactive
 
 # Legacy testing (Ubuntu only)
 make test
@@ -82,17 +84,18 @@ make test
 
 - **ansible.cfg**: Ansible configuration with timer and profiling callbacks
 - **Makefile**: Convenient command shortcuts with consistent flags
-- **docker-compose.yml**: Multi-platform testing environment setup (Ubuntu + Arch Linux)
+- **docker-compose.yml**: Multi-platform testing environment setup (Ubuntu + Arch Linux + Fedora)
 - **Dockerfile**: Ubuntu-based testing container with Linuxbrew
 - **Dockerfile.archlinux**: Arch Linux testing container with pacman
+- **Dockerfile.fedora**: Fedora testing container with DNF
 - **requirements.yml**: Ansible collections for cross-platform support
 - **scripts/**: Utility scripts for initial setup (homebrew, ansible installation, etc.)
 
 ### Key Features
 
-- **Cross-platform support**: Works on both macOS and Arch Linux
+- **Cross-platform support**: Works on macOS, Arch Linux, and Fedora
 - **Automatic OS detection**: Uses `ansible_distribution` for platform-specific tasks
-- **Package manager abstraction**: Homebrew (macOS) and Pacman (Arch Linux)
+- **Package manager abstraction**: Homebrew (macOS), Pacman (Arch Linux), and DNF (Fedora)
 - **GNU stow integration**: Dotfiles management across platforms
 - **Comprehensive testing**: Multi-platform Docker testing environment
 - **Vault encryption**: Secure handling of SSH keys and sensitive dotfiles
@@ -113,11 +116,16 @@ make test
 - Ansible installed via `pacman -S ansible`
 - Required collections: `ansible-galaxy collection install community.general`
 
+#### Fedora
+- DNF package manager (default)
+- Ansible installed via `dnf install ansible`
+- Required collections: `ansible-galaxy collection install community.general`
+
 ### General Notes
 - **OS Detection**: Automatically detects platform using `ansible_distribution`
 - **Vault passwords**: Required for SSH and dotfiles tasks
 - **Dotfiles**: Repository cloned with `--recurse-submodules`
-- **Package management**: Homebrew (macOS) or Pacman (Arch Linux)
+- **Package management**: Homebrew (macOS), Pacman (Arch Linux), or DNF (Fedora)
 - **Privilege escalation**: Uses `become: True` with proper user handling
 - **Testing**: Multi-platform Docker environment for validation
 
@@ -125,9 +133,10 @@ make test
 
 The project includes comprehensive testing infrastructure:
 
-- **test-both.sh**: Cross-platform testing on both Ubuntu and Arch Linux
+- **test-both.sh**: Cross-platform testing on Ubuntu, Arch Linux, and Fedora
 - **test-ubuntu.sh**: Ubuntu-based testing (simulates macOS with Linuxbrew)
 - **test-arch.sh**: Arch Linux testing (true pacman environment)
+- **test-fedora.sh**: Fedora testing (true DNF environment)
 - **Docker environments**: Separate containers for each platform
 - **Automated validation**: Syntax checking and environment verification
 - Cross-platform package management with OS detection via `ansible_distribution`
@@ -148,3 +157,42 @@ The project includes comprehensive testing infrastructure:
 - Validate YAML syntax: `yamllint .`
 - Check Ansible playbook syntax: `ansible-playbook --syntax-check local.yml`
 - Perform dry-run for validation: `ansible-playbook local.yml --check`
+
+## Validation Steps for Supporting a New OS
+
+When adding support for a new operating system to this Ansible automation project, follow these validation steps:
+
+- **Dependency Mapping**:
+  - Identify package manager for the new OS (e.g., apt, yum, zypper)
+  - Map equivalent packages across different package managers
+  - Create conditional tasks using `ansible_distribution` variable
+
+- **Package Installation Validation**:
+  - Test package installation using the native package manager
+  - Verify package dependencies and conflicts
+  - Create fallback mechanisms for packages not available in default repositories
+
+- **Environment Configuration**:
+  - Test shell configuration (zsh, bash) compatibility
+  - Validate path and environment variable settings
+  - Ensure cross-shell script compatibility
+
+- **Toolchain Compatibility**:
+  - Test core development tools (git, nodejs, python, etc.)
+  - Verify version management and installation methods
+  - Check for platform-specific compilation requirements
+
+- **Docker Testing**:
+  - Create a Dockerfile for the new OS
+  - Set up a testing container with necessary build tools
+  - Integrate the new OS into the `test-both.sh` script
+
+- **Continuous Integration**:
+  - Update GitHub Actions or CI/CD pipeline to include the new OS
+  - Create matrix builds that include the new platform
+  - Set up automated testing for the new environment
+
+- **Documentation**:
+  - Update README with new OS-specific installation instructions
+  - Document any unique configuration or setup requirements
+  - Add troubleshooting notes for the new platform
