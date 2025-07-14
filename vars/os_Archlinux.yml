@@ -19,6 +19,7 @@ core_packages:
   - github-cli  # Note: different from macOS 'gh'
   - zoxide
   - go  # Note: different from macOS 'golang'
+  - git-lfs
 
 # ZSH packages
 zsh_packages:

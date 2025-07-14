@@ -19,6 +19,7 @@ core_packages:
   - gh  # GitHub CLI
   - zoxide
   - golang-go
+  - git-lfs
 
 # ZSH packages
 zsh_packages:
