@@ -205,3 +205,7 @@ When adding support for a new operating system to this Ansible automation projec
   - Update README with new OS-specific installation instructions
   - Document any unique configuration or setup requirements
   - Add troubleshooting notes for the new platform
+
+## Memory
+
+- Update documentation
