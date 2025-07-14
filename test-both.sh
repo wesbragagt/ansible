@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Cross-platform testing script for Ansible playbooks
-# This script tests the Ansible playbooks on Ubuntu, Arch Linux, and Fedora
+# This script tests the Ansible playbooks on Ubuntu (macOS simulation), Ubuntu (native), Arch Linux, and Fedora
 # to validate cross-platform compatibility
 
 echo "=== Cross-Platform Testing for Ansible Playbooks ==="
@@ -70,11 +70,12 @@ cleanup() {
 # Main execution
 main() {
     local ubuntu_failed=0
+    local ubuntu_native_failed=0
     local arch_failed=0
     local fedora_failed=0
     
     echo "Starting cross-platform testing..."
-    echo "This will test on Ubuntu (simulating macOS), Arch Linux, and Fedora"
+    echo "This will test on Ubuntu (simulating macOS), Ubuntu (native), Arch Linux, and Fedora"
     echo ""
     
     # Run syntax check first
@@ -84,10 +85,16 @@ main() {
         exit 1
     fi
     
-    # Test Ubuntu environment
+    # Test Ubuntu environment (macOS simulation)
     run_platform_test "Ubuntu (macOS simulation)" "./test-ubuntu.sh"
     if [ $? -ne 0 ]; then
         ubuntu_failed=1
+    fi
+    
+    # Test Ubuntu native environment
+    run_platform_test "Ubuntu (native)" "./test-ubuntu-native.sh"
+    if [ $? -ne 0 ]; then
+        ubuntu_native_failed=1
     fi
     
     # Test Arch Linux environment
@@ -108,9 +115,10 @@ main() {
     echo "Test Results Summary"
     echo "=========================================="
     
-    if [ $ubuntu_failed -eq 0 ] && [ $arch_failed -eq 0 ] && [ $fedora_failed -eq 0 ]; then
+    if [ $ubuntu_failed -eq 0 ] && [ $ubuntu_native_failed -eq 0 ] && [ $arch_failed -eq 0 ] && [ $fedora_failed -eq 0 ]; then
         echo "✅ All tests passed!"
-        echo "✅ Ubuntu environment: PASSED"
+        echo "✅ Ubuntu environment (macOS simulation): PASSED"
+        echo "✅ Ubuntu environment (native): PASSED"
         echo "✅ Arch Linux environment: PASSED"
         echo "✅ Fedora environment: PASSED"
         echo ""
@@ -118,9 +126,15 @@ main() {
     else
         echo "❌ Some tests failed:"
         if [ $ubuntu_failed -eq 1 ]; then
-            echo "❌ Ubuntu environment: FAILED"
+            echo "❌ Ubuntu environment (macOS simulation): FAILED"
         else
-            echo "✅ Ubuntu environment: PASSED"
+            echo "✅ Ubuntu environment (macOS simulation): PASSED"
+        fi
+        
+        if [ $ubuntu_native_failed -eq 1 ]; then
+            echo "❌ Ubuntu environment (native): FAILED"
+        else
+            echo "✅ Ubuntu environment (native): PASSED"
         fi
         
         if [ $arch_failed -eq 1 ]; then
@@ -149,13 +163,14 @@ case "$1" in
         echo "Usage: $0 [OPTIONS]"
         echo ""
         echo "OPTIONS:"
-        echo "  --help, -h     Show this help message"
-        echo "  --cleanup, -c  Clean up test containers and exit"
-        echo "  --ubuntu       Test only Ubuntu environment"
-        echo "  --arch         Test only Arch Linux environment"
-        echo "  --fedora       Test only Fedora environment"
+        echo "  --help, -h           Show this help message"
+        echo "  --cleanup, -c        Clean up test containers and exit"
+        echo "  --ubuntu             Test only Ubuntu environment (macOS simulation)"
+        echo "  --ubuntu-native      Test only Ubuntu native environment"
+        echo "  --arch               Test only Arch Linux environment"
+        echo "  --fedora             Test only Fedora environment"
         echo ""
-        echo "Without options, tests all three platforms"
+        echo "Without options, tests all four platforms"
         exit 0
         ;;
     --cleanup|-c)
@@ -165,6 +180,10 @@ case "$1" in
     --ubuntu)
         run_syntax_check
         run_platform_test "Ubuntu (macOS simulation)" "./test-ubuntu.sh"
+        ;;
+    --ubuntu-native)
+        run_syntax_check
+        run_platform_test "Ubuntu (native)" "./test-ubuntu-native.sh"
         ;;
     --arch)
         run_syntax_check

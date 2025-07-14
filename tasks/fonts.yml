@@ -27,3 +27,12 @@
     update_cache: true
   tags: *fonts_tags
   when: ansible_distribution == "Fedora"
+
+- name: Install Fonts (Ubuntu/LinuxMint)
+  become: true
+  ansible.builtin.apt:
+    name: ['fonts-hack', 'fonts-firacode']
+    state: present
+    update_cache: true
+  tags: *fonts_tags
+  when: ansible_distribution in ["Ubuntu", "LinuxMint"]

@@ -23,6 +23,15 @@
   tags: *dotfiles_tags
   when: ansible_distribution == "Fedora"
 
+- name: Installing stow (Ubuntu/LinuxMint)
+  become: True
+  ansible.builtin.apt:
+    name: stow
+    state: present
+    update_cache: true
+  tags: *dotfiles_tags
+  when: ansible_distribution in ["Ubuntu", "LinuxMint"]
+
 - name: Check for dotfiles cloned
   stat:
     path: ~/.dotfiles

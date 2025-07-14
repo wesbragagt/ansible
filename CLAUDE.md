@@ -4,14 +4,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is an Ansible-based development environment automation tool that sets up macOS, Arch Linux, and Fedora machines with essential development tools and configurations. The project uses Ansible playbooks to install and configure tools like homebrew/pacman/dnf, zsh, neovim, nodejs, tmux, and various CLI utilities.
+This is an Ansible-based development environment automation tool that sets up macOS, Ubuntu, Linux Mint, Arch Linux, and Fedora machines with essential development tools and configurations. The project uses Ansible playbooks to install and configure tools like homebrew/apt/pacman/dnf, zsh, neovim, nodejs, tmux, and various CLI utilities.
 
 ## Key Commands
 
 ### Running the Full Setup
 ```bash
 # Complete setup (requires sudo password and vault password)
-# Works on macOS, Arch Linux, and Fedora
+# Works on macOS, Ubuntu, Linux Mint, Arch Linux, and Fedora
 make all
 # or
 ansible-playbook local.yml --ask-become-pass --ask-vault-pass
@@ -50,14 +50,16 @@ make fonts
 ./test-both.sh
 
 # Test specific platforms
-./test-ubuntu.sh --validate    # Ubuntu environment (macOS simulation)
-./test-arch.sh --validate      # Arch Linux environment
-./test-fedora.sh --validate    # Fedora environment
+./test-macos.sh --validate          # macOS simulation (Ubuntu + Linuxbrew)
+./test-ubuntu-native.sh --validate  # Ubuntu environment (native apt)
+./test-arch.sh --validate           # Arch Linux environment
+./test-fedora.sh --validate         # Fedora environment
 
 # Interactive testing
-./test-ubuntu.sh --interactive
-./test-arch.sh --interactive
-./test-fedora.sh --interactive
+./test-macos.sh --interactive          # macOS simulation environment
+./test-ubuntu-native.sh --interactive  # Ubuntu native environment
+./test-arch.sh --interactive           # Arch Linux environment
+./test-fedora.sh --interactive         # Fedora environment
 
 # Legacy testing (Ubuntu only)
 make test
@@ -85,7 +87,8 @@ make test
 - **ansible.cfg**: Ansible configuration with timer and profiling callbacks
 - **Makefile**: Convenient command shortcuts with consistent flags
 - **docker-compose.yml**: Multi-platform testing environment setup (Ubuntu + Arch Linux + Fedora)
-- **Dockerfile**: Ubuntu-based testing container with Linuxbrew
+- **Dockerfile**: Ubuntu-based testing container with Linuxbrew (macOS simulation)
+- **Dockerfile.ubuntu**: Ubuntu testing container with native apt
 - **Dockerfile.archlinux**: Arch Linux testing container with pacman
 - **Dockerfile.fedora**: Fedora testing container with DNF
 - **requirements.yml**: Ansible collections for cross-platform support
@@ -93,9 +96,9 @@ make test
 
 ### Key Features
 
-- **Cross-platform support**: Works on macOS, Arch Linux, and Fedora
+- **Cross-platform support**: Works on macOS, Ubuntu, Linux Mint, Arch Linux, and Fedora
 - **Automatic OS detection**: Uses `ansible_distribution` for platform-specific tasks
-- **Package manager abstraction**: Homebrew (macOS), Pacman (Arch Linux), and DNF (Fedora)
+- **Package manager abstraction**: Homebrew (macOS), APT (Ubuntu/Linux Mint), Pacman (Arch Linux), and DNF (Fedora)
 - **GNU stow integration**: Dotfiles management across platforms
 - **Comprehensive testing**: Multi-platform Docker testing environment
 - **Vault encryption**: Secure handling of SSH keys and sensitive dotfiles
@@ -116,6 +119,11 @@ make test
 - Ansible installed via `pacman -S ansible`
 - Required collections: `ansible-galaxy collection install community.general`
 
+#### Ubuntu/Linux Mint
+- APT package manager (default)
+- Ansible installed via `apt install ansible`
+- Required collections: `ansible-galaxy collection install community.general`
+
 #### Fedora
 - DNF package manager (default)
 - Ansible installed via `dnf install ansible`
@@ -125,7 +133,7 @@ make test
 - **OS Detection**: Automatically detects platform using `ansible_distribution`
 - **Vault passwords**: Required for SSH and dotfiles tasks
 - **Dotfiles**: Repository cloned with `--recurse-submodules`
-- **Package management**: Homebrew (macOS), Pacman (Arch Linux), or DNF (Fedora)
+- **Package management**: Homebrew (macOS), APT (Ubuntu/Linux Mint), Pacman (Arch Linux), or DNF (Fedora)
 - **Privilege escalation**: Uses `become: True` with proper user handling
 - **Testing**: Multi-platform Docker environment for validation
 
@@ -134,7 +142,8 @@ make test
 The project includes comprehensive testing infrastructure:
 
 - **test-both.sh**: Cross-platform testing on Ubuntu, Arch Linux, and Fedora
-- **test-ubuntu.sh**: Ubuntu-based testing (simulates macOS with Linuxbrew)
+- **test-macos.sh**: macOS simulation testing (Ubuntu + Linuxbrew)
+- **test-ubuntu-native.sh**: Ubuntu native testing (true apt environment)
 - **test-arch.sh**: Arch Linux testing (true pacman environment)
 - **test-fedora.sh**: Fedora testing (true DNF environment)
 - **Docker environments**: Separate containers for each platform

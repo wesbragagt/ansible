@@ -35,6 +35,16 @@
   tags: *tags_for_node_tasks
   when: ansible_distribution == "Fedora"
 
+- name: Install Node.js packages (Ubuntu/LinuxMint)
+  ansible.builtin.apt:
+    name: "{{ node_packages }}"
+    state: "{{ package_manager_state }}"
+    update_cache: "{{ package_manager_update_cache }}"
+  retries: 3
+  become: True
+  tags: *tags_for_node_tasks
+  when: ansible_distribution in ["Ubuntu", "LinuxMint"]
+
 - name: Install fnm via package manager (macOS)
   community.general.homebrew:
     name: fnm
@@ -57,6 +67,13 @@
   become: True
   become_user: "{{ ansible_user_id }}"
   when: fnm_install_method == "curl" and ansible_distribution == "Fedora"
+
+- name: Install fnm via curl (Ubuntu/LinuxMint)
+  shell: "{{ fnm_install_command }}"
+  tags: *tags_for_node_tasks
+  become: True
+  become_user: "{{ ansible_user_id }}"
+  when: fnm_install_method == "curl" and ansible_distribution in ["Ubuntu", "LinuxMint"]
 
 - name: Check npm folder
   ignore_errors: True
@@ -95,3 +112,9 @@
   tags: *tags_for_node_tasks
   become: true
   when: ansible_distribution == "Fedora"
+
+- name: Install Bun (Ubuntu/LinuxMint)
+  shell: "{{ bun_install_command }}"
+  tags: *tags_for_node_tasks
+  become: true
+  when: ansible_distribution in ["Ubuntu", "LinuxMint"]

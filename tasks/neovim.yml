@@ -40,6 +40,15 @@
   tags: *neovim_tags
   when: ansible_distribution == "Fedora"
 
+- name: Install Neovim build dependencies (Ubuntu/LinuxMint)
+  ansible.builtin.apt:
+    name: "{{ neovim_build_deps }}"
+    state: "{{ package_manager_state }}"
+    update_cache: "{{ package_manager_update_cache }}"
+  become: True
+  tags: *neovim_tags
+  when: ansible_distribution in ["Ubuntu", "LinuxMint"]
+
 - name: Check if neovim source directory exists
   stat:
     path: "{{ ansible_user_dir }}/neovim"

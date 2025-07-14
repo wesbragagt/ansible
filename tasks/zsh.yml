@@ -32,6 +32,15 @@
   tags: *tags_for_zsh_tasks
   when: ansible_distribution == "Fedora"
 
+- name: Install ZSH (Ubuntu/LinuxMint)
+  ansible.builtin.apt:
+    name: "{{ zsh_packages }}"
+    state: "{{ package_manager_state }}"
+    update_cache: "{{ package_manager_update_cache }}"
+  become: True
+  tags: *tags_for_zsh_tasks
+  when: ansible_distribution in ["Ubuntu", "LinuxMint"]
+
 # This will set the variable the_user to the current running user, but will change the shell of that user using root.
 # https://stackoverflow.com/questions/43560657/edit-current-users-shell-with-ansible
 - name: Change shell to zsh
@@ -72,6 +81,13 @@
   become_user: "{{ ansible_user_id }}"
   tags: *tags_for_zsh_tasks
   when: starship_check.rc != 0 and starship_install_method == "curl" and ansible_distribution == "MacOSX"
+
+- name: Install Starship via curl (Ubuntu/LinuxMint)
+  shell: "{{ starship_install_command }}"
+  become: True
+  become_user: "{{ ansible_user_id }}"
+  tags: *tags_for_zsh_tasks
+  when: starship_check.rc != 0 and starship_install_method == "curl" and ansible_distribution in ["Ubuntu", "LinuxMint"]
 
 - name: Remove oh-my-zsh (deprecated)
   tags: *tags_for_zsh_tasks
