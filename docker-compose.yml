@@ -60,3 +60,18 @@ services:
     environment:
       - ANSIBLE_HOST_KEY_CHECKING=False
       - ANSIBLE_STDOUT_CALLBACK=yaml
+  
+  # NixOS testing environment (true NixOS with nix flakes)
+  nixos_test:
+    container_name: nixos_dev_test
+    build:
+      context: .
+      dockerfile: Dockerfile.nixos
+    volumes:
+      - ".:/home/wesbragagt/dev/ansible"
+    tty: true
+    stdin_open: true
+    entrypoint: /bin/sh
+    working_dir: /home/wesbragagt/dev/ansible
+    environment:
+      - NIX_CONFIG=experimental-features = nix-command flakes

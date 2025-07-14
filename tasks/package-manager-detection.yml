@@ -1,0 +1,58 @@
+---
+# Package Manager Detection Task
+# Detects available package managers in priority order: nix > homebrew > apt > dnf > pacman
+# Sets detected_package_manager variable for use in other tasks
+
+- name: Check for Nix package manager
+  command: which nix
+  register: nix_check
+  failed_when: false
+  changed_when: false
+
+- name: Check for Homebrew package manager
+  command: which brew
+  register: homebrew_check
+  failed_when: false
+  changed_when: false
+
+- name: Check for APT package manager
+  command: which apt
+  register: apt_check
+  failed_when: false
+  changed_when: false
+
+- name: Check for DNF package manager
+  command: which dnf
+  register: dnf_check
+  failed_when: false
+  changed_when: false
+
+- name: Check for Pacman package manager
+  command: which pacman
+  register: pacman_check
+  failed_when: false
+  changed_when: false
+
+- name: Set detected package manager (priority order)
+  set_fact:
+    detected_package_manager: "{{ 
+      'nix' if nix_check.rc == 0 else
+      'homebrew' if homebrew_check.rc == 0 else
+      'apt' if apt_check.rc == 0 else
+      'dnf' if dnf_check.rc == 0 else
+      'pacman' if pacman_check.rc == 0 else
+      'unknown'
+    }}"
+
+- name: Display detected package manager
+  debug:
+    msg: "Detected package manager: {{ detected_package_manager }}"
+
+- name: Fail if no supported package manager found
+  fail:
+    msg: "No supported package manager found. Supported: nix, homebrew, apt, dnf, pacman"
+  when: detected_package_manager == 'unknown'
+
+- name: Set package manager variables based on detection
+  set_fact:
+    package_manager_vars_file: "vars/pkg_{{ detected_package_manager }}.yml"

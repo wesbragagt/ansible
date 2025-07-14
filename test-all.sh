@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Cross-platform testing script for Ansible playbooks
-# This script tests the Ansible playbooks on Ubuntu, Arch Linux, and Fedora
+# This script tests the Ansible playbooks on Ubuntu, Arch Linux, Fedora, and NixOS
 # to validate cross-platform compatibility
 
 echo "=== Cross-Platform Testing for Ansible Playbooks ==="
@@ -72,9 +72,10 @@ main() {
     local ubuntu_failed=0
     local arch_failed=0
     local fedora_failed=0
+    local nixos_failed=0
     
     echo "Starting cross-platform testing..."
-    echo "This will test on Ubuntu (simulating macOS), Arch Linux, and Fedora"
+    echo "This will test on Ubuntu (simulating macOS), Arch Linux, Fedora, and NixOS"
     echo ""
     
     # Run syntax check first
@@ -102,17 +103,24 @@ main() {
         fedora_failed=1
     fi
     
+    # Test NixOS environment
+    run_platform_test "NixOS" "./test-nixos.sh"
+    if [ $? -ne 0 ]; then
+        nixos_failed=1
+    fi
+    
     # Summary
     echo ""
     echo "=========================================="
     echo "Test Results Summary"
     echo "=========================================="
     
-    if [ $ubuntu_failed -eq 0 ] && [ $arch_failed -eq 0 ] && [ $fedora_failed -eq 0 ]; then
+    if [ $ubuntu_failed -eq 0 ] && [ $arch_failed -eq 0 ] && [ $fedora_failed -eq 0 ] && [ $nixos_failed -eq 0 ]; then
         echo "✅ All tests passed!"
         echo "✅ Ubuntu environment: PASSED"
         echo "✅ Arch Linux environment: PASSED"
         echo "✅ Fedora environment: PASSED"
+        echo "✅ NixOS environment: PASSED"
         echo ""
         echo "Your Ansible playbooks are ready for cross-platform deployment!"
     else
@@ -135,6 +143,12 @@ main() {
             echo "✅ Fedora environment: PASSED"
         fi
         
+        if [ $nixos_failed -eq 1 ]; then
+            echo "❌ NixOS environment: FAILED"
+        else
+            echo "✅ NixOS environment: PASSED"
+        fi
+        
         echo ""
         echo "Please review the errors above and fix the issues."
         exit 1
@@ -154,8 +168,9 @@ case "$1" in
         echo "  --ubuntu       Test only Ubuntu environment"
         echo "  --arch         Test only Arch Linux environment"
         echo "  --fedora       Test only Fedora environment"
+        echo "  --nixos        Test only NixOS environment"
         echo ""
-        echo "Without options, tests all three platforms"
+        echo "Without options, tests all four platforms"
         exit 0
         ;;
     --cleanup|-c)
@@ -173,6 +188,10 @@ case "$1" in
     --fedora)
         run_syntax_check
         run_platform_test "Fedora" "./test-fedora.sh"
+        ;;
+    --nixos)
+        run_syntax_check
+        run_platform_test "NixOS" "./test-nixos.sh"
         ;;
     "")
         main

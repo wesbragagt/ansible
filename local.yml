@@ -5,35 +5,43 @@
     source_key: "./.ssh/id_rsa"
     dest_key: "{{ lookup('env', 'HOME') }}/.ssh/id_rsa"
   tasks:
-    - name: Update Homebrew (macOS)
+    - name: Detect package manager
+      include_tasks: tasks/package-manager-detection.yml
+      tags: ['setup']
+    
+    - name: Install Nix if requested and not present
+      include_tasks: tasks/nix-installation.yml
+      when: install_nix is defined and install_nix
+      tags: ['nix', 'install']
+    
+    - name: Update Homebrew
       shell: brew update
-      when: ansible_distribution == "MacOSX"
+      when: detected_package_manager == "homebrew"
       environment:
         HOMEBREW_NO_AUTO_UPDATE: '1'
     
-    - name: Update package cache (Arch Linux)
+    - name: Update package cache (Pacman)
       community.general.pacman:
         update_cache: true
-      when: ansible_distribution == "Archlinux"
+      when: detected_package_manager == "pacman"
       become: true
     
-    - name: Update package cache (Fedora)
+    - name: Update package cache (DNF)
       ansible.builtin.dnf:
         update_cache: true
-      when: ansible_distribution == "Fedora"
+      when: detected_package_manager == "dnf"
       become: true
     
-    - name: Update package cache (Ubuntu)
+    - name: Update package cache (APT)
       ansible.builtin.apt:
         update_cache: true
-      when: ansible_distribution == "Ubuntu"
+      when: detected_package_manager == "apt"
       become: true
     
-    - name: Update package cache (Linux Mint)
-      ansible.builtin.apt:
-        update_cache: true
-      when: ansible_distribution == "LinuxMint"
-      become: true
+    - name: Update Nix channels (if using Nix)
+      shell: nix-channel --update
+      when: detected_package_manager == "nix"
+      failed_when: false
     
     - include_tasks: tasks/homebrew.yml
       tags: ['homebrew']

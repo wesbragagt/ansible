@@ -1,0 +1,51 @@
+---
+# Ubuntu-specific variables
+package_manager: apt
+package_manager_module: ansible.builtin.apt
+package_manager_state: present
+package_manager_update_cache: true
+become_user_needed: false
+
+# Core packages mapping
+core_packages:
+  - fzf
+  - ripgrep
+  - bat
+  - fd-find
+  - wget
+  - tmux
+  - jq
+  - git-delta
+  - gh  # GitHub CLI
+  - zoxide
+  - golang-go
+
+# ZSH packages
+zsh_packages:
+  - zsh
+
+# Node.js packages
+node_packages:
+  - nodejs
+  - npm
+
+# Neovim build dependencies
+neovim_build_deps:
+  - ninja-build
+  - cmake
+  - gcc
+  - make
+  - unzip
+  - gettext
+  - curl
+  - build-essential
+
+# Installation methods
+starship_install_method: curl
+starship_install_command: "curl -sS https://starship.rs/install.sh | sh"
+bun_install_command: "apt install -y unzip && curl -fsSL https://bun.sh/install | bash"
+fnm_install_method: curl
+fnm_install_command: "apt install -y unzip && curl -fsSL https://fnm.vercel.app/install | bash"
+
+# System shell path
+system_shell_path: /bin/zsh

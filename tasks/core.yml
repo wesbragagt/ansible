@@ -1,11 +1,15 @@
-- name: Load OS-specific variables
-  include_vars: "{{ item }}"
-  with_first_found:
-    - "vars/os_{{ ansible_facts['distribution'] }}.yml"
-    - "vars/os_defaults.yml"
+- name: Detect package manager
+  include_tasks: package-manager-detection.yml
   tags: &core_tags ['install', 'core']
 
-- name: Install core packages
+- name: Load package manager-specific variables
+  include_vars: "{{ item }}"
+  with_first_found:
+    - "{{ package_manager_vars_file }}"
+    - "vars/os_defaults.yml"
+  tags: *core_tags
+
+- name: Install core packages (traditional package managers)
   action:
     module: "{{ package_manager_module }}"
     name: "{{ core_packages }}"
@@ -13,6 +17,13 @@
     update_cache: "{{ package_manager_update_cache | default(omit) }}"
   become: True
   become_user: "{{ ansible_user_id if become_user_needed else omit }}"
+  when: detected_package_manager != 'nix'
+  tags: *core_tags
+
+- name: Install core packages (Nix)
+  shell: "{{ nix_install_command }} {{ nix_package_prefix }}{{ item }}"
+  loop: "{{ core_packages }}"
+  when: detected_package_manager == 'nix'
   tags: *core_tags
 
 - name: Add git delta config

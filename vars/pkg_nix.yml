@@ -1,0 +1,53 @@
+---
+# Nix-specific variables
+package_manager: nix
+package_manager_module: shell
+package_manager_state: present
+package_manager_update_cache: false
+become_user_needed: false
+
+# Core packages mapping (using Nix package names)
+core_packages:
+  - fzf
+  - ripgrep
+  - bat
+  - fd
+  - wget
+  - tmux
+  - jq
+  - git-delta
+  - gh
+  - zoxide
+  - go
+
+# ZSH packages
+zsh_packages:
+  - zsh
+
+# Node.js packages
+node_packages:
+  - nodejs_22
+  - nodePackages.npm
+  - fnm
+
+# Neovim build dependencies
+neovim_build_deps:
+  - ninja
+  - cmake
+  - gettext
+  - curl
+  - gcc
+
+# Installation methods
+starship_install_method: nix
+starship_install_command: "nix-env -iA nixpkgs.starship"
+bun_install_command: "nix-env -iA nixpkgs.bun"
+fnm_install_method: nix
+fnm_install_command: "nix-env -iA nixpkgs.fnm"
+
+# System shell path
+system_shell_path: /bin/zsh
+
+# Nix-specific installation command
+nix_install_command: "nix-env -iA"
+nix_package_prefix: "nixpkgs."

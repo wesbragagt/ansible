@@ -1,0 +1,49 @@
+# NixOS testing environment for cross-platform development
+# This container tests the nix flake in a true NixOS environment
+# using nix package manager and flakes to validate NixOS scenarios
+FROM nixos/nix:latest
+
+# Enable flakes and nix-command (required for modern nix usage)
+RUN echo "experimental-features = nix-command flakes" >> /etc/nix/nix.conf
+
+# Install base packages needed for testing
+RUN nix-env -iA nixpkgs.git \
+    nixpkgs.vim \
+    nixpkgs.curl \
+    nixpkgs.bash \
+    nixpkgs.coreutils \
+    nixpkgs.findutils \
+    nixpkgs.gnugrep \
+    nixpkgs.gnused \
+    nixpkgs.openssh \
+    nixpkgs.which
+
+# Create wesbragagt user directory (NixOS containers work differently)
+RUN mkdir -p /home/wesbragagt && \
+    mkdir -p /home/wesbragagt/.config/nix && \
+    echo "experimental-features = nix-command flakes" > /home/wesbragagt/.config/nix/nix.conf
+
+# Set as default user (using root for simplicity in testing environment)
+ENV HOME="/home/wesbragagt"
+ENV USER="wesbragagt"
+
+# Set working directory
+WORKDIR /home/wesbragagt
+
+# Create a test script to validate the environment
+RUN echo '#!/bin/bash' > /home/wesbragagt/validate-nixos.sh && \
+    echo 'echo "=== NixOS Environment Validation ==="' >> /home/wesbragagt/validate-nixos.sh && \
+    echo 'echo "OS: $(uname -a)"' >> /home/wesbragagt/validate-nixos.sh && \
+    echo 'echo "Nix version: $(nix --version)"' >> /home/wesbragagt/validate-nixos.sh && \
+    echo 'echo "Nix store: $(ls -la /nix/store | head -5)"' >> /home/wesbragagt/validate-nixos.sh && \
+    echo 'echo "Flakes enabled: $(nix show-config | grep experimental-features)"' >> /home/wesbragagt/validate-nixos.sh && \
+    echo 'echo "Available packages (sample):"' >> /home/wesbragagt/validate-nixos.sh && \
+    echo 'nix-env -qa | head -5' >> /home/wesbragagt/validate-nixos.sh && \
+    echo 'echo "=== Testing Nix Flake ==="' >> /home/wesbragagt/validate-nixos.sh && \
+    echo 'cd /home/wesbragagt/dev/ansible/nix && nix flake check' >> /home/wesbragagt/validate-nixos.sh && \
+    echo 'echo "=== Testing Development Shell ==="' >> /home/wesbragagt/validate-nixos.sh && \
+    echo 'cd /home/wesbragagt/dev/ansible/nix && nix develop --command bash -c "echo Available tools: && which git fzf ripgrep bat fd tmux nvim node || echo Some tools may not be available"' >> /home/wesbragagt/validate-nixos.sh && \
+    chmod +x /home/wesbragagt/validate-nixos.sh
+
+# Set default shell to bash
+ENV SHELL=/bin/bash

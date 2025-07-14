@@ -1,0 +1,51 @@
+---
+# Nix Installation Task
+# Installs Nix package manager if not present
+
+- name: Check if Nix is installed
+  command: which nix
+  register: nix_installed_check
+  failed_when: false
+  changed_when: false
+
+- name: Install Nix (multi-user installation)
+  shell: |
+    curl -L https://nixos.org/nix/install | sh -s -- --daemon
+  when: nix_installed_check.rc != 0
+  become: true
+  register: nix_install_result
+
+- name: Source Nix profile for current session
+  shell: . /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh
+  when: nix_install_result.changed
+  changed_when: false
+
+- name: Add Nix to PATH in shell profile
+  lineinfile:
+    path: "{{ ansible_env.HOME }}/.bashrc"
+    line: 'if [ -e /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh ]; then . /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh; fi'
+    create: yes
+  when: nix_install_result.changed
+
+- name: Add Nix to PATH in zsh profile
+  lineinfile:
+    path: "{{ ansible_env.HOME }}/.zshrc"
+    line: 'if [ -e /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh ]; then . /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh; fi'
+    create: yes
+  when: nix_install_result.changed
+
+- name: Enable Nix flakes and nix-command
+  shell: |
+    mkdir -p ~/.config/nix
+    echo "experimental-features = nix-command flakes" > ~/.config/nix/nix.conf
+  when: nix_install_result.changed
+
+- name: Verify Nix installation
+  command: /nix/var/nix/profiles/default/bin/nix --version
+  register: nix_version
+  when: nix_install_result.changed
+
+- name: Display Nix version
+  debug:
+    msg: "Nix installed successfully: {{ nix_version.stdout }}"
+  when: nix_install_result.changed and nix_version.stdout is defined
