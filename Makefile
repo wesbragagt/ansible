@@ -20,6 +20,9 @@ zsh:
 node:
 	ansible-playbook local.yml -t node $(DEFAULT_FLAGS)
 
+python:
+	ansible-playbook local.yml -t python $(DEFAULT_FLAGS)
+
 ssh: 
 	ansible-playbook local.yml -t ssh $(DEFAULT_FLAGS) $(VAULT_FLAG)
 

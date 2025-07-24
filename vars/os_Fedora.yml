@@ -30,6 +30,11 @@ node_packages:
   - nodejs
   - npm
 
+# Python packages
+python_packages:
+  - python3
+  - python3-pip
+
 # Neovim build dependencies
 neovim_build_deps:
   - ninja-build
@@ -47,6 +52,8 @@ starship_package: starship
 bun_install_command: "dnf install -y unzip && curl -fsSL https://bun.sh/install | bash"
 fnm_install_method: curl
 fnm_install_command: "dnf install -y unzip && curl -fsSL https://fnm.vercel.app/install | bash"
+uv_install_method: curl
+uv_install_command: "curl -LsSf https://astral.sh/uv/install.sh | sh"
 
 # System shell path
 system_shell_path: /bin/zsh

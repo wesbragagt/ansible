@@ -49,6 +49,8 @@
       tags: ['dotfiles']
     - include_tasks: tasks/node.yml
       tags: ['node']
+    - include_tasks: tasks/python.yml
+      tags: ['python']
     - include_tasks: tasks/neovim.yml
       tags: ['neovim', 'install', 'dotfiles']
     - include_tasks: tasks/fonts.yml

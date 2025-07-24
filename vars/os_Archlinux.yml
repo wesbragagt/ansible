@@ -30,6 +30,11 @@ node_packages:
   - npm
   - nodejs-lts-jod  # Node.js 22 LTS
 
+# Python packages
+python_packages:
+  - python
+  - python-pip
+
 # Neovim build dependencies
 neovim_build_deps:
   - base-devel
@@ -43,6 +48,8 @@ starship_package: starship
 bun_install_command: "curl -fsSL https://bun.sh/install | bash"
 fnm_install_method: curl
 fnm_install_command: "curl -fsSL https://fnm.vercel.app/install | bash"
+uv_install_method: curl
+uv_install_command: "curl -LsSf https://astral.sh/uv/install.sh | sh"
 
 # System shell path
 system_shell_path: /bin/zsh

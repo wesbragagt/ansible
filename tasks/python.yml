@@ -1,0 +1,54 @@
+---
+- name: Load OS-specific variables
+  include_vars: "{{ item }}"
+  with_first_found:
+    - "vars/os_{{ ansible_facts['distribution'] }}.yml"
+    - "vars/os_defaults.yml"
+  tags: &tags_for_python_tasks ["install", "python"]
+
+- name: Install Python packages (macOS)
+  community.general.homebrew:
+    name: "{{ python_packages }}"
+    state: "{{ package_manager_state }}"
+  retries: 3
+  become: True
+  become_user: "{{ ansible_user_id }}"
+  tags: *tags_for_python_tasks
+  when: ansible_distribution == "MacOSX"
+
+- name: Install Python packages (Arch Linux)
+  community.general.pacman:
+    name: "{{ python_packages }}"
+    state: "{{ package_manager_state }}"
+    update_cache: "{{ package_manager_update_cache }}"
+  retries: 3
+  become: True
+  tags: *tags_for_python_tasks
+  when: ansible_distribution == "Archlinux"
+
+- name: Install Python packages (Fedora)
+  ansible.builtin.dnf:
+    name: "{{ python_packages }}"
+    state: "{{ package_manager_state }}"
+    update_cache: "{{ package_manager_update_cache }}"
+  retries: 3
+  become: True
+  tags: *tags_for_python_tasks
+  when: ansible_distribution == "Fedora"
+
+- name: Install Python packages (Ubuntu/LinuxMint)
+  ansible.builtin.apt:
+    name: "{{ python_packages }}"
+    state: "{{ package_manager_state }}"
+    update_cache: "{{ package_manager_update_cache }}"
+  retries: 3
+  become: True
+  tags: *tags_for_python_tasks
+  when: ansible_distribution in ["Ubuntu", "LinuxMint"]
+
+- name: Install uv via standalone installer (macOS/Linux)
+  shell: "{{ uv_install_command }}"
+  tags: *tags_for_python_tasks
+  become: True
+  become_user: "{{ ansible_user_id }}"
+  when: uv_install_method == "curl" and ansible_distribution in ["MacOSX", "Archlinux", "Fedora", "Ubuntu", "LinuxMint"]
