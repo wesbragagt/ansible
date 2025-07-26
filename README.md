@@ -199,6 +199,72 @@ The setup includes automated SSH agent configuration:
 - Store vault password securely in password manager
 - For convenience, create `.vault-pass` file (add to `.gitignore`)
 
+## Home-Manager Usage
+
+This project uses Nix home-manager to manage packages and services. Here are useful commands for working with home-manager:
+
+### Package Management
+```bash
+# Activate home-manager configuration (install/update packages)
+nix run .#homeConfigurations.wesbragagt@linux-x86_64.activationPackage
+
+# Check what packages are currently installed
+home-manager packages
+
+# Search for available packages
+nix search nixpkgs <package-name>
+
+# See what would be installed/updated (dry run)
+nix run .#homeConfigurations.wesbragagt@linux-x86_64.activationPackage --dry-run
+```
+
+### Configuration Management
+```bash
+# Edit the home-manager configuration
+# Configuration is defined in flake.nix under home-manager.users.wesbragagt
+
+# View current home-manager generation
+home-manager generations
+
+# Rollback to previous generation
+home-manager rollback
+
+# Remove old generations (cleanup)
+home-manager expire-generations "-30 days"
+```
+
+### Service Management
+```bash
+# List all home-manager services
+systemctl --user list-units --type=service | grep -E "(home-manager|nix)"
+
+# Check SSH agent service (managed by home-manager)
+systemctl --user status ssh-agent
+
+# Restart all home-manager services
+systemctl --user restart home-manager-*.service
+```
+
+### Development Workflow
+```bash
+# Enter development shell with all packages available
+nix develop
+
+# Test configuration changes before applying
+nix flake check
+
+# Update flake inputs (nixpkgs, home-manager, etc.)
+nix flake update
+
+# View flake outputs and configuration structure
+nix flake show
+```
+
+### Useful Paths
+- **Configuration**: Defined in `flake.nix` under `home-manager.users.wesbragagt`
+- **State directory**: `~/.local/state/nix/profiles/home-manager`
+- **Service logs**: `journalctl --user -u home-manager-*.service`
+
 ## Troubleshooting
 
 ### Nix Issues
