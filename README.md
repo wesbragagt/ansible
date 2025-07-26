@@ -115,11 +115,14 @@ make zsh
 # SSH setup (requires vault password for key deployment)
 make ssh
 
-# Git configuration
+# Git configuration (basic setup and host key configuration)
 make git-setup
 
 # Dotfiles deployment via GNU stow (requires vault password)
 make dotfiles
+
+# Run Nix package tests
+make test
 ```
 
 ## Architecture
@@ -144,7 +147,6 @@ make dotfiles
 
 ## Testing
 
-### Nix Testing
 ```bash
 # Test Nix flake package installation and availability
 ./test/test-nix.sh
@@ -154,16 +156,9 @@ make dotfiles
 
 # Build test container only
 ./test/test-nix.sh build
-```
 
-### Legacy Ansible Testing
-```bash
-# Cross-platform testing (Ubuntu, Arch Linux, Fedora)
-./test-both.sh
-./test-macos.sh --validate          # macOS simulation (Ubuntu + Linuxbrew)
-./test-ubuntu-native.sh --validate  # Ubuntu environment (native apt)
-./test-arch.sh --validate           # Arch Linux environment  
-./test-fedora.sh --validate         # Fedora environment
+# Or use the Makefile shortcut
+make test
 ```
 
 ## Development Notes

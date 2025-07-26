@@ -4,8 +4,10 @@
 DEFAULT_FLAGS="--ask-become-pass"
 VAULT_FLAG="--ask-vault-pass"
 
+.PHONY: test all nix zsh ssh git-setup dotfiles
+
 test:
-	docker compose down && docker compose up --build -d && docker compose exec new_computer bash
+	./test/test-nix.sh
 
 all:
 	ansible-playbook local.yml $(DEFAULT_FLAGS) $(VAULT_FLAG)

@@ -1,16 +1,1 @@
 node_modules
-
-# Nix
-result
-result-*
-
-# SOPS
-*.dec
-*.bak
-
-# Age keys (never commit these!)
-~/.config/sops/age/keys.txt
-.config/sops/age/keys.txt
-
-# Flake lock might be committed depending on your preference
-# flake.lock
