@@ -41,6 +41,9 @@
         stow
         openssh
         unzip
+
+        # Prettier ls
+        eza
         
         # Shell environment
         zsh
