@@ -8,7 +8,8 @@ RUN pacman -Syu --noconfirm && \
         curl \
         xz \
         sudo \
-        which
+        which \
+        ansible
 
 # Create a non-root user for testing
 RUN useradd -m -s /bin/bash wesbragagt && \

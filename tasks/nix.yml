@@ -36,24 +36,22 @@
       Architecture: {{ ansible_architecture }}
       Nix target: {{ nix_flake_target }}
 
-- name: Ensure Nix daemon is running
-  systemd:
-    name: nix-daemon
-    state: started
-    enabled: yes
-  become: True
-  when: ansible_system != 'Darwin'
 
 
 - name: Run Nix home-manager activation
   shell: |
-    source /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh
+    # Source Nix profile (try both multi-user and single-user paths)
+    if [ -f /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh ]; then
+      source /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh
+    elif [ -f ~/.nix-profile/etc/profile.d/nix.sh ]; then
+      source ~/.nix-profile/etc/profile.d/nix.sh
+    fi
     nix run .#homeConfigurations.{{ nix_flake_target }}.activationPackage
   args:
     executable: /bin/bash
     chdir: "{{ playbook_dir }}"
   environment:
-    PATH: "/nix/var/nix/profiles/default/bin:{{ ansible_env.PATH }}"
+    PATH: "/nix/var/nix/profiles/default/bin:~/.nix-profile/bin:{{ ansible_env.PATH }}"
 
 - name: Display setup completion message
   debug:

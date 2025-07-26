@@ -39,6 +39,8 @@
         go
         git-lfs
         stow
+        openssh
+        unzip
         
         # Shell environment
         zsh
@@ -71,6 +73,18 @@
         home.stateVersion = "24.05";
         
         home.packages = mkPackages pkgs;
+        
+        # SSH Agent Service - creates systemd user service automatically
+        # This creates the socket at $XDG_RUNTIME_DIR/ssh-agent.socket
+        # that your zshrc references with SSH_AUTH_SOCK
+        services.ssh-agent.enable = true;
+        
+        # SSH client configuration
+        programs.ssh = {
+          enable = true;
+          # Automatically add SSH keys to agent when used
+          addKeysToAgent = "yes";
+        };
         
         # Git configuration
         programs.git = {
