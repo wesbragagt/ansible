@@ -38,7 +38,7 @@
         wget
         tmux
         jq
-        git-delta
+        delta
         gh
         zoxide
         go
@@ -52,7 +52,6 @@
         # Development tools
         neovim
         nodejs
-        nodePackages.npm
         fnm
         python3
         uv
@@ -66,7 +65,8 @@
         age
         
         # Fonts
-        (nerdfonts.override { fonts = [ "Hack" "FiraCode" ]; })
+        nerd-fonts.hack
+        nerd-fonts.fira-code
       ];
       
       # Common home-manager configuration

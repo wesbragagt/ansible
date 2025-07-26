@@ -18,11 +18,12 @@ RUN useradd -m -s /bin/bash wesbragagt && \
 USER wesbragagt
 WORKDIR /home/wesbragagt
 
-# Install Nix using Determinate Systems installer
-RUN curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install --no-confirm
+# Install Nix in single-user mode
+RUN sh <(curl -L https://nixos.org/nix/install) --no-daemon
 
 # Add Nix to PATH for subsequent commands
 ENV PATH="/nix/var/nix/profiles/default/bin:/home/wesbragagt/.nix-profile/bin:$PATH"
+ENV USER=wesbragagt
 
 # Copy the flake configuration
 COPY --chown=wesbragagt:wesbragagt . /home/wesbragagt/ansible/
@@ -32,7 +33,20 @@ WORKDIR /home/wesbragagt/ansible
 
 # Source nix profile and make it available for subsequent RUN commands
 SHELL ["/bin/bash", "-c"]
-RUN echo 'source /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh' >> ~/.bashrc
+RUN echo 'source ~/.nix-profile/etc/profile.d/nix.sh' >> ~/.bashrc && \
+    echo 'export NIX_PATH=$HOME/.nix-defexpr/channels:/nix/var/nix/profiles/per-user/root/channels' >> ~/.bashrc
+
+# Enable flakes
+RUN mkdir -p ~/.config/nix && \
+    echo 'experimental-features = nix-command flakes' > ~/.config/nix/nix.conf
+
+# Create a startup script to properly source Nix
+RUN echo '#!/bin/bash' > /home/wesbragagt/start.sh && \
+    echo 'source ~/.nix-profile/etc/profile.d/nix.sh' >> /home/wesbragagt/start.sh && \
+    echo 'export NIX_PATH=$HOME/.nix-defexpr/channels:/nix/var/nix/profiles/per-user/root/channels' >> /home/wesbragagt/start.sh && \
+    echo 'exec "$@"' >> /home/wesbragagt/start.sh && \
+    chmod +x /home/wesbragagt/start.sh
 
 # Default command
+ENTRYPOINT ["/home/wesbragagt/start.sh"]
 CMD ["/bin/bash", "-l"]

@@ -10,6 +10,11 @@ This Nix flake provides all the development dependencies previously managed by A
 - SOPS integration for secure SSH key management
 - Home-manager for user-specific configurations
 
+## Prerequisites
+
+- Nix with flakes enabled
+- Git (for flake to work properly)
+
 ## Quick Start
 
 ### 1. Install Nix
@@ -19,6 +24,8 @@ If you don't have Nix installed:
 ```bash
 curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install
 ```
+
+Note: The Determinate Systems installer automatically enables flakes. If using another installation method, ensure flakes are enabled.
 
 ### 2. Set up SOPS (for secrets management)
 
@@ -47,22 +54,22 @@ This gives you a shell with all tools available.
 
 For Linux x86_64:
 ```bash
-home-manager switch --flake .#wesbragagt@linux-x86_64
+nix run .#homeConfigurations.wesbragagt@linux-x86_64.activationPackage
 ```
 
 For Linux aarch64:
 ```bash
-home-manager switch --flake .#wesbragagt@linux-aarch64
+nix run .#homeConfigurations.wesbragagt@linux-aarch64.activationPackage
 ```
 
 For macOS x86_64 (Intel):
 ```bash
-home-manager switch --flake .#wesbragagt@darwin-x86_64
+nix run .#homeConfigurations.wesbragagt@darwin-x86_64.activationPackage
 ```
 
 For macOS aarch64 (Apple Silicon):
 ```bash
-home-manager switch --flake .#wesbragagt@darwin-aarch64
+nix run .#homeConfigurations.wesbragagt@darwin-aarch64.activationPackage
 # Or for full system configuration:
 darwin-rebuild switch --flake .#example-darwin
 ```
