@@ -1,0 +1,68 @@
+---
+- name: Install Nix using Determinate Systems installer
+  block:
+    - name: Check if Nix is already installed
+      stat:
+        path: /nix/store
+      register: nix_installed
+
+    - name: Download and install Nix (multi-user)
+      shell: |
+        curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install
+      when: not nix_installed.stat.exists
+      become: True
+
+    - name: Source Nix profile for current session
+      shell: |
+        if [ -f /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh ]; then
+          source /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh
+        fi
+      args:
+        executable: /bin/bash
+
+- name: Detect system architecture and OS
+  set_fact:
+    nix_system: "{{ ansible_architecture | replace('x86_64', 'x86_64') | replace('aarch64', 'aarch64') | replace('arm64', 'aarch64') }}"
+    nix_os: "{{ 'darwin' if ansible_system == 'Darwin' else 'linux' }}"
+
+- name: Set Nix flake target
+  set_fact:
+    nix_flake_target: "wesbragagt@{{ nix_os }}-{{ nix_system }}"
+
+- name: Display detected system information
+  debug:
+    msg: |
+      Detected system: {{ ansible_system }}
+      Architecture: {{ ansible_architecture }}
+      Nix target: {{ nix_flake_target }}
+
+- name: Ensure Nix daemon is running
+  systemd:
+    name: nix-daemon
+    state: started
+    enabled: yes
+  become: True
+  when: ansible_system != 'Darwin'
+
+
+- name: Run Nix home-manager activation
+  shell: |
+    source /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh
+    nix run .#homeConfigurations.{{ nix_flake_target }}.activationPackage
+  args:
+    executable: /bin/bash
+    chdir: "{{ playbook_dir }}"
+  environment:
+    PATH: "/nix/var/nix/profiles/default/bin:{{ ansible_env.PATH }}"
+
+- name: Display setup completion message
+  debug:
+    msg: |
+      Nix setup completed successfully!
+      System: {{ nix_flake_target }}
+      
+      Your development environment is now managed by Nix.
+      All tools from your Ansible setup are now available via the Nix flake.
+      
+      To activate the environment manually in the future:
+      nix run .#homeConfigurations.{{ nix_flake_target }}.activationPackage

@@ -134,37 +134,6 @@ run_container_tests() {
             echo "Git: $(git --version 2>/dev/null || echo "not found")"
         '\''
         
-        echo ""
-        echo "=== Testing SOPS functionality ==="
-        echo ""
-        
-        # Test within nix develop for SOPS
-        nix develop --command bash -c '\''
-            # Generate age key for testing
-            mkdir -p ~/.config/sops/age
-            age-keygen -o ~/.config/sops/age/keys.txt
-            
-            # Get public key and update .sops.yaml
-            PUBLIC_KEY=$(grep -o "public key: age.*" ~/.config/sops/age/keys.txt | cut -d" " -f3)
-            sed -i "s/age1xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx/$PUBLIC_KEY/g" .sops.yaml
-            
-            # Create a fresh test secret
-            echo "test_secret: \"This is a test secret string!\"" > secrets/test-secret.yaml
-            
-            # Encrypt the test secret
-            if sops -e -i secrets/test-secret.yaml; then
-                echo "✅ Successfully encrypted test secret"
-                
-                # Try to decrypt it
-                if sops -d secrets/test-secret.yaml | grep -q "This is a test secret string!"; then
-                    echo "✅ Successfully decrypted test secret"
-                else
-                    echo "❌ Failed to decrypt test secret correctly"
-                fi
-            else
-                echo "❌ Failed to encrypt test secret"
-            fi
-        '\''
     '
 }
 

@@ -1,5 +1,5 @@
 {
-  description = "Development environment setup with sops-nix";
+  description = "Development environment setup for ansible-managed systems";
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
@@ -13,14 +13,9 @@
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    
-    sops-nix = {
-      url = "github:Mic92/sops-nix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
   };
 
-  outputs = { self, nixpkgs, darwin, home-manager, sops-nix }:
+  outputs = { self, nixpkgs, darwin, home-manager }:
     let
       # Supported systems
       systems = [ "x86_64-linux" "aarch64-linux" "x86_64-darwin" "aarch64-darwin" ];
@@ -60,7 +55,7 @@
         gettext
         curl
         
-        # Secrets management
+        # Secrets management tools (for manual use)
         sops
         age
         
@@ -77,22 +72,7 @@
         
         home.packages = mkPackages pkgs;
         
-        # Import sops-nix module
-        imports = [ sops-nix.homeManagerModules.sops ];
-        
-        # SOPS configuration
-        sops = {
-          age.keyFile = "${homeDirectory}/.config/sops/age/keys.txt";
-          defaultSopsFile = ./secrets/test-secret.yaml;
-          validateSopsFiles = false;
-          
-          secrets.test_secret = {
-            path = "${homeDirectory}/.ssh/test-secret.txt";
-            mode = "0600";
-          };
-        };
-        
-        # Basic git config (similar to ansible git-setup.yml)
+        # Git configuration
         programs.git = {
           enable = true;
           userName = "wesbragagt";

@@ -1,129 +1,38 @@
-- name: Load OS-specific variables
-  include_vars: "{{ item }}"
-  with_first_found:
-    - "vars/os_{{ ansible_facts['distribution'] }}.yml"
-    - "vars/os_defaults.yml"
+---
+# Simplified ZSH setup - packages and plugins now managed by Nix
+# Only handles system-level shell change and cleanup tasks
+
+- name: Detect ZSH path across platforms
+  shell: which zsh
+  register: zsh_path_result
+  changed_when: false
+  failed_when: false
   tags: &tags_for_zsh_tasks ['zsh']
 
-- name: Install ZSH (macOS)
-  community.general.homebrew:
-    name: "{{ zsh_packages }}"
-    state: "{{ package_manager_state }}"
-  become: True
-  become_user: "{{ ansible_user_id }}"
+- name: Set ZSH path variable
+  set_fact:
+    detected_zsh_path: "{{ zsh_path_result.stdout if zsh_path_result.rc == 0 else '/bin/zsh' }}"
   tags: *tags_for_zsh_tasks
-  when: ansible_distribution == "MacOSX"
 
-- name: Install ZSH (Arch Linux)
-  community.general.pacman:
-    name: "{{ zsh_packages }}"
-    state: "{{ package_manager_state }}"
-    update_cache: "{{ package_manager_update_cache }}"
-  become: True
-  tags: *tags_for_zsh_tasks
-  when: ansible_distribution == "Archlinux"
-
-- name: Install ZSH (Fedora)
-  ansible.builtin.dnf:
-    name: "{{ zsh_packages }}"
-    state: "{{ package_manager_state }}"
-    update_cache: "{{ package_manager_update_cache }}"
-  become: True
-  tags: *tags_for_zsh_tasks
-  when: ansible_distribution == "Fedora"
-
-- name: Install ZSH (Ubuntu/LinuxMint)
-  ansible.builtin.apt:
-    name: "{{ zsh_packages }}"
-    state: "{{ package_manager_state }}"
-    update_cache: "{{ package_manager_update_cache }}"
-  become: True
-  tags: *tags_for_zsh_tasks
-  when: ansible_distribution in ["Ubuntu", "LinuxMint"]
-
-# This will set the variable the_user to the current running user, but will change the shell of that user using root.
-# https://stackoverflow.com/questions/43560657/edit-current-users-shell-with-ansible
-- name: Change shell to zsh
-  tags: *tags_for_zsh_tasks
+- name: Change shell to zsh (cross-platform)
   become: True
   user:
     name: '{{ ansible_user_id }}'
-    shell: '{{ system_shell_path }}'
-
-- name: Check that starship is installed
+    shell: '{{ detected_zsh_path }}'
   tags: *tags_for_zsh_tasks
-  shell: which starship
-  register: starship_check
-  changed_when: false
-  failed_when: false
 
-- name: Install Starship via package manager (Arch Linux)
-  community.general.pacman:
-    name: "{{ starship_package }}"
-    state: "{{ package_manager_state }}"
-    update_cache: "{{ package_manager_update_cache }}"
-  become: True
-  tags: *tags_for_zsh_tasks
-  when: starship_check.rc != 0 and starship_install_method == "package" and ansible_distribution == "Archlinux"
-
-- name: Install Starship via package manager (Fedora)
-  ansible.builtin.dnf:
-    name: "{{ starship_package }}"
-    state: "{{ package_manager_state }}"
-    update_cache: "{{ package_manager_update_cache }}"
-  become: True
-  tags: *tags_for_zsh_tasks
-  when: starship_check.rc != 0 and starship_install_method == "package" and ansible_distribution == "Fedora"
-
-- name: Install Starship via curl (macOS)
-  shell: "{{ starship_install_command }}"
-  become: True
-  become_user: "{{ ansible_user_id }}"
-  tags: *tags_for_zsh_tasks
-  when: starship_check.rc != 0 and starship_install_method == "curl" and ansible_distribution == "MacOSX"
-
-- name: Install Starship via curl (Ubuntu/LinuxMint)
-  shell: "{{ starship_install_command }}"
-  become: True
-  become_user: "{{ ansible_user_id }}"
-  tags: *tags_for_zsh_tasks
-  when: starship_check.rc != 0 and starship_install_method == "curl" and ansible_distribution in ["Ubuntu", "LinuxMint"]
-
-- name: Remove oh-my-zsh (deprecated)
-  tags: *tags_for_zsh_tasks
+- name: Remove oh-my-zsh (deprecated cleanup)
   file:
     path: '{{ ansible_user_dir }}/.oh-my-zsh'
     state: absent
   become: True
-  become_user: '{{ansible_user_id}}'
-
-- name: Check that the autosuggestions exists
-  become: True
-  become_user: '{{ansible_user_id}}'
+  become_user: '{{ ansible_user_id }}'
   tags: *tags_for_zsh_tasks
-  stat:
-    path: '{{ ansible_user_dir }}/.zsh/zsh-autosuggestions'
-  register: autosuggestions
 
-- name: Auto Suggestions
+- name: Remove old manual ZSH plugins (now managed by Nix)
+  file:
+    path: '{{ ansible_user_dir }}/.zsh'
+    state: absent
   become: True
-  become_user: '{{ansible_user_id}}'
+  become_user: '{{ ansible_user_id }}'
   tags: *tags_for_zsh_tasks
-  shell: git clone https://github.com/zsh-users/zsh-autosuggestions ~/.zsh/zsh-autosuggestions/
-  when: not autosuggestions.stat.exists
-
-# fzf tab completion git clone https://github.com/Aloxaf/fzf-tab ~/somewhere
-- name: Check that the fzf tab completion exists
-  become: True
-  become_user: '{{ansible_user_id}}'
-  tags: *tags_for_zsh_tasks
-  stat: 
-    path: '{{ ansible_user_dir }}/.zsh/fzf-tab'
-  register: fzf_tab
-
-- name: FZF Tab
-  become: True
-  become_user: '{{ansible_user_id}}'
-  tags: *tags_for_zsh_tasks
-  shell: git clone https://github.com/Aloxaf/fzf-tab ~/.zsh/fzf-tab/
-  when: not fzf_tab.stat.exists
