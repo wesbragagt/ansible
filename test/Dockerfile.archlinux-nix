@@ -1,0 +1,38 @@
+FROM archlinux:latest
+
+# Install dependencies
+RUN pacman -Syu --noconfirm && \
+    pacman -S --noconfirm \
+        base-devel \
+        git \
+        curl \
+        xz \
+        sudo \
+        which
+
+# Create a non-root user for testing
+RUN useradd -m -s /bin/bash wesbragagt && \
+    echo "wesbragagt ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+
+# Switch to non-root user
+USER wesbragagt
+WORKDIR /home/wesbragagt
+
+# Install Nix using Determinate Systems installer
+RUN curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install --no-confirm
+
+# Add Nix to PATH for subsequent commands
+ENV PATH="/nix/var/nix/profiles/default/bin:/home/wesbragagt/.nix-profile/bin:$PATH"
+
+# Copy the flake configuration
+COPY --chown=wesbragagt:wesbragagt . /home/wesbragagt/ansible/
+
+# Set working directory
+WORKDIR /home/wesbragagt/ansible
+
+# Source nix profile and make it available for subsequent RUN commands
+SHELL ["/bin/bash", "-c"]
+RUN echo 'source /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh' >> ~/.bashrc
+
+# Default command
+CMD ["/bin/bash", "-l"]

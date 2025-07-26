@@ -1,0 +1,14 @@
+# SOPS configuration file
+# This file tells sops how to encrypt/decrypt secrets
+
+# Replace this with your actual age public key after running:
+# age-keygen -o ~/.config/sops/age/keys.txt
+keys:
+  - &wesbragagt age1xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+creation_rules:
+  # Rules for encrypting files in the secrets directory
+  - path_regex: secrets/.*\.yaml$
+    key_groups:
+      - age:
+        - *wesbragagt
