@@ -1,4 +1,70 @@
 ---
+- name: Copy flake.nix for customization
+  copy:
+    src: "{{ playbook_dir }}/flake.nix"
+    dest: "{{ playbook_dir }}/{{ flake_dest | default('flake.nix') }}"
+    backup: yes
+  when: flake_dest is defined
+  tags: ['nix', 'install']
+
+- name: Replace git username in flake.nix
+  replace:
+    path: "{{ playbook_dir }}/{{ flake_dest | default('flake.nix') }}"
+    regexp: 'userName = "wesbragagt";'
+    replace: 'userName = "{{ git_user_name }}";'
+  tags: ['nix', 'install']
+
+- name: Replace git user email in flake.nix
+  replace:
+    path: "{{ playbook_dir }}/{{ flake_dest | default('flake.nix') }}"
+    regexp: 'userEmail = "wesbragagt@example.com";'
+    replace: 'userEmail = "{{ git_user_email }}";'
+  tags: ['nix', 'install']
+
+- name: Replace username in homeConfigurations
+  replace:
+    path: "{{ playbook_dir }}/{{ flake_dest | default('flake.nix') }}"
+    regexp: '"wesbragagt@'
+    replace: '"{{ nix_user_name }}@'
+  tags: ['nix', 'install']
+
+- name: Replace username in configuration blocks
+  replace:
+    path: "{{ playbook_dir }}/{{ flake_dest | default('flake.nix') }}"
+    regexp: 'username = "wesbragagt";'
+    replace: 'username = "{{ nix_user_name }}";'
+  tags: ['nix', 'install']
+
+- name: Replace home directory paths
+  replace:
+    path: "{{ playbook_dir }}/{{ flake_dest | default('flake.nix') }}"
+    regexp: 'homeDirectory = "/Users/wesbragagt";'
+    replace: 'homeDirectory = "{{ nix_home_directory }}";'
+  when: ansible_system == 'Darwin'
+  tags: ['nix', 'install']
+
+- name: Replace home directory paths for Linux
+  replace:
+    path: "{{ playbook_dir }}/{{ flake_dest | default('flake.nix') }}"
+    regexp: 'homeDirectory = "/home/wesbragagt";'
+    replace: 'homeDirectory = "{{ nix_home_directory }}";'
+  when: ansible_system != 'Darwin'
+  tags: ['nix', 'install']
+
+- name: Replace darwin user configuration
+  replace:
+    path: "{{ playbook_dir }}/{{ flake_dest | default('flake.nix') }}"
+    regexp: 'users\.users\.wesbragagt'
+    replace: 'users.users.{{ nix_user_name }}'
+  tags: ['nix', 'install']
+
+- name: Replace darwin home-manager user
+  replace:
+    path: "{{ playbook_dir }}/{{ flake_dest | default('flake.nix') }}"
+    regexp: 'home-manager\.users\.wesbragagt'
+    replace: 'home-manager.users.{{ nix_user_name }}'
+  tags: ['nix', 'install']
+
 - name: Install Nix using Determinate Systems installer
   block:
     - name: Check if Nix is already installed
@@ -8,7 +74,7 @@
 
     - name: Download and install Nix (multi-user)
       shell: |
-        curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install
+        curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install --no-confirm
       when: not nix_installed.stat.exists
       become: True
 
@@ -27,7 +93,7 @@
 
 - name: Set Nix flake target
   set_fact:
-    nix_flake_target: "wesbragagt@{{ nix_os }}-{{ nix_system }}"
+    nix_flake_target: "{{ nix_user_name }}@{{ nix_os }}-{{ nix_system }}"
 
 - name: Display detected system information
   debug:

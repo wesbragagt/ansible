@@ -102,7 +102,7 @@
         programs.git = {
           enable = true;
           userName = "wesbragagt";
-          userEmail = "wesbragagt@gmail.com";
+          userEmail = "wesbragagt@example.com";
           extraConfig = {
             core.pager = "delta";
             interactive.diffFilter = "delta --color-only";

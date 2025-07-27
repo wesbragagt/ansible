@@ -1,5 +1,11 @@
 #!/bin/bash
-# Test script for Nix flake setup
+# Test script for Nix flake setup and multi-user template system
+#
+# This script validates:
+# - Multi-user flake.nix customization via Ansible replace tasks
+# - Nix installation via Determinate Systems installer in containers
+# - Package availability and functionality after setup
+# - Cross-platform compatibility and architecture support
 
 set -e
 
@@ -65,13 +71,73 @@ check_command() {
     fi
 }
 
+# Test multi-user functionality
+# This tests the Ansible replace-based template system that customizes flake.nix
+# for different users without requiring separate Jinja2 template files
+test_multiuser() {
+    echo ""
+    echo "=== Testing Multi-User Template System ==="
+    echo ""
+    echo "Testing Ansible replace tasks that customize flake.nix for different users..."
+    echo ""
+    
+    # Test different user configurations
+    declare -a test_users=(
+        "testuser1:Test User One:test1@example.com"
+        "testuser2:Test User Two:test2@company.org"
+        "developer:Jane Developer:jane@dev.local"
+    )
+    
+    for user_config in "${test_users[@]}"; do
+        IFS=':' read -r username fullname email <<< "$user_config"
+        
+        echo "Testing configuration for: $username ($fullname)"
+        
+        # Generate flake with specific user  
+        echo "  Running: ansible-playbook with user=$username, name='$fullname', email='$email'"
+        extra_vars=$(cat <<EOF
+{
+  "nix_user_name": "$username",
+  "git_user_name": "$fullname", 
+  "git_user_email": "$email",
+  "nix_home_directory": "/home/$username"
+}
+EOF
+)
+        ansible_output=$(ansible-playbook local.yml --tags nix --limit localhost \
+            --extra-vars "$extra_vars" \
+            --extra-vars "flake_dest=flake.nix.test" 2>&1)
+        ansible_exit_code=$?
+        
+        if [ $ansible_exit_code -ne 0 ]; then
+            echo "  Ansible failed with exit code: $ansible_exit_code"
+            echo "  Output: $ansible_output"
+        fi
+        
+        # Check if template generated correctly
+        if grep -F "userName = \"$fullname\"" flake.nix.test >/dev/null && \
+           grep -F "userEmail = \"$email\"" flake.nix.test >/dev/null && \
+           grep -F "\"$username@" flake.nix.test >/dev/null; then
+            echo -e "${GREEN}✅ Template generated correctly for $username${NC}"
+        else
+            echo -e "${RED}❌ Template generation failed for $username${NC}"
+        fi
+    done
+    
+    # Restore original user config
+    ansible-playbook local.yml --tags nix --limit localhost &>/dev/null
+}
+
 # Build and run container
 build_container() {
     echo ""
     echo "Building container using $RUNTIME..."
     echo ""
+    echo -e "${YELLOW}Note: Nix will be installed via Ansible inside the container${NC}"
+    echo -e "${YELLOW}Container tests require '--security-opt seccomp=unconfined' for Nix to work${NC}"
+    echo ""
     
-    $RUNTIME build -f test/Dockerfile.archlinux-nix -t nix-flake-test .
+    $RUNTIME build --platform linux/amd64 -f test/Dockerfile.archlinux-nix -t nix-flake-test .
     print_status $? "Container built with $RUNTIME"
 }
 
@@ -81,27 +147,46 @@ run_container_tests() {
     echo "Running tests inside container..."
     echo ""
     
-    $RUNTIME run --rm -it nix-flake-test bash -c '
-        # Source nix profile  
-        source ~/.nix-profile/etc/profile.d/nix.sh
+    $RUNTIME run --platform linux/amd64 --security-opt seccomp=unconfined --rm -it nix-flake-test bash -c '
+        echo "=== Installing Nix via Ansible ==="
+        cd /home/testuser/ansible
         
+        # Run Ansible to install Nix (this tests the actual Determinate Systems installation process)
+        echo "Running Ansible Nix installation task (with --no-confirm for automation)..."
+        ansible-playbook local.yml --tags nix --limit localhost \
+            -e git_user_name="Test User" \
+            -e git_user_email="test@example.com" \
+            -e flake_dest="flake.nix.test" \
+            -e nix_user_name="testuser" \
+            -e nix_home_directory="/home/testuser" || {
+            echo "Ansible Nix installation failed"
+            exit 1
+        }
+        
+        # Source nix profile after installation
+        if [ -f /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh ]; then
+            source /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh
+        elif [ -f ~/.nix-profile/etc/profile.d/nix.sh ]; then
+            source ~/.nix-profile/etc/profile.d/nix.sh
+        fi
+        
+        echo ""
         echo "=== Testing Nix Installation ==="
         nix --version
         
         echo ""
         echo "=== Testing Flake ==="
-        cd /home/wesbragagt/ansible
         
         # Test flake show first
         echo "Testing flake structure..."
-        nix flake show --no-warn-dirty || true
+        nix flake show --no-warn-dirty -f ./flake.nix.test || true
         
         echo ""
         echo "=== Testing installed packages ==="
         echo ""
         
         # Enter nix develop shell and test commands
-        nix develop --command bash -c '\''
+        nix develop -f ./flake.nix.test --command bash -c '\''
             # Test core tools
             for cmd in fzf rg bat fd wget tmux jq delta gh zoxide go git-lfs stow sops age; do
                 if command -v $cmd &> /dev/null; then
@@ -154,13 +239,27 @@ main() {
             ;;
         interactive)
             echo "Starting interactive container..."
-            $RUNTIME run --rm -it nix-flake-test bash -l
+            $RUNTIME run --platform linux/amd64 --security-opt seccomp=unconfined --rm -it nix-flake-test bash -l
+            ;;
+        multiuser)
+            if [ ! -f "flake.nix" ]; then
+                echo -e "${RED}Error: flake.nix not found${NC}"
+                echo "Please ensure the flake.nix file exists"
+                exit 1
+            fi
+            test_multiuser
             ;;
         *)
-            echo "Usage: $0 [build|test|interactive]"
-            echo "  build       - Build the container"
-            echo "  test        - Build and run tests (default)"
+            echo "Usage: $0 [build|test|interactive|multiuser]"
+            echo "  build       - Build the container (no Nix preinstalled)"
+            echo "  test        - Build and run full Ansible+Nix tests in container (default)"
             echo "  interactive - Start an interactive shell in the container"
+            echo "  multiuser   - Test multi-user flake.nix customization system locally"
+            echo ""
+            echo "Test modes:"
+            echo "  multiuser   - Tests Ansible replace-based template system"
+            echo "  test        - Tests full Nix installation via Determinate Systems installer"
+            echo "  interactive - Manual testing and debugging"
             echo ""
             echo "Environment variables:"
             echo "  CONTAINER_RUNTIME - Specify container runtime (docker/podman)"

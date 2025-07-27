@@ -1,0 +1,14 @@
+---
+# User configuration variables
+# These can be overridden in host_vars or via command line
+
+# Git configuration
+git_user_name: "{{ ansible_user_id }}"
+git_user_email: "{{ ansible_user_id }}@example.com"
+
+# Nix configuration  
+nix_user_name: "{{ ansible_user_id }}"
+nix_user_email: "{{ git_user_email }}"
+
+# Home directory paths (auto-detected based on OS)
+nix_home_directory: "{{ '/Users/' + ansible_user_id if ansible_system == 'Darwin' else '/home/' + ansible_user_id }}"

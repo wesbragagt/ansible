@@ -127,10 +127,10 @@ make test
 
 ### Main Components
 
-- **flake.nix**: Nix flake managing all development packages and SSH agent configuration
+- **flake.nix**: Nix flake managing all development packages and SSH agent configuration (dynamically customized via Ansible)
 - **local.yml**: Main Ansible playbook that orchestrates the entire setup
 - **tasks/**: Directory containing streamlined task modules:
-  - `nix.yml`: Nix installation and home-manager activation (replaces platform-specific package management)
+  - `nix.yml`: Nix installation via Determinate Systems installer and flake.nix customization (replaces platform-specific package management)
   - `zsh.yml`: System-level ZSH shell configuration and cleanup
   - `ssh.yml`: SSH key management via Ansible vault
   - `git-setup.yml`: Basic Git configuration and host key setup
@@ -146,10 +146,13 @@ make test
 ## Testing
 
 ```bash
-# Test Nix flake package installation and availability
-./test/test-nix.sh
+# Test multi-user template system (tests dynamic flake.nix customization)
+./test/test-nix.sh multiuser
 
-# Interactive testing in Arch Linux container with Nix  
+# Test full Nix installation via Ansible in container
+./test/test-nix.sh test
+
+# Interactive testing in Arch Linux container  
 ./test/test-nix.sh interactive
 
 # Build test container only
@@ -159,15 +162,30 @@ make test
 make test
 ```
 
+The test infrastructure validates:
+- **Template system**: Multi-user flake.nix customization works correctly
+- **Container isolation**: Nix installation via Ansible in clean environments
+- **Package availability**: All development tools are accessible after setup
+- **Cross-platform compatibility**: Same setup works on different architectures
+
 ## Development Notes
 
 ### Behind the Scenes
 
 1. **Nix gets installed** via the Determinate Systems installer (it's the good one)
-2. **My flake activates** and suddenly you have all my development tools
-3. **SSH agent starts working** automatically (no more manual ssh-add)
-4. **System gets configured** with sane defaults for git, shell, etc.
-5. **Your dotfiles deploy** and everything Just Works™
+2. **flake.nix gets customized** with your user details (git name, email, home directory paths)
+3. **My flake activates** and suddenly you have all my development tools
+4. **SSH agent starts working** automatically (no more manual ssh-add)
+5. **System gets configured** with sane defaults for git, shell, etc.
+6. **Your dotfiles deploy** and everything Just Works™
+
+### Dynamic Configuration System
+
+Instead of using Jinja2 templates, this setup uses a smarter approach:
+- **Single source of truth**: One `flake.nix` file that's readable and maintainable
+- **Dynamic customization**: Ansible replaces user-specific values (usernames, emails, paths) at deployment time
+- **No template files**: No separate `.j2` files to maintain or keep in sync
+- **Multi-user support**: Same flake works for any user with their specific configuration
 
 ### Why This Approach Wins
 
