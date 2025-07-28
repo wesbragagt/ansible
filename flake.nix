@@ -41,11 +41,6 @@
         stow
         openssh
         unzip
-
-        # used for remapping keys (Linux only)
-      ] ++ pkgs.lib.optionals pkgs.stdenv.isLinux [
-        keyd
-
         # Prettier ls
         eza
         
@@ -71,6 +66,10 @@
         # Fonts
         nerd-fonts.hack
         nerd-fonts.fira-code
+
+        # used for remapping keys (Linux only)
+      ] ++ pkgs.lib.optionals pkgs.stdenv.isLinux [
+        keyd
       ];
       
       # Common home-manager configuration
