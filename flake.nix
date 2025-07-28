@@ -42,6 +42,9 @@
         openssh
         unzip
 
+        # used for remapping keys
+        keyd
+
         # Prettier ls
         eza
         
