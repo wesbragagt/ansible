@@ -191,9 +191,14 @@
               enable = true;
               casks = [
                 "1password"
+                "bitwarden"
                 "firefox"
+                "zen"
+                "google-chrome"
                 "slack"
                 "discord"
+                "raycast"
+                "karabiner-elements"
               ];
             };
             
