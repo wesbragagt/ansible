@@ -25,6 +25,7 @@
       
       # Package configuration for all platforms
       mkPackages = pkgs: with pkgs; [
+        zsh
         # Core CLI tools
         fzf
         ripgrep
@@ -45,7 +46,6 @@
         eza
         
         # Shell environment
-        zsh
         starship
         
         # Development tools

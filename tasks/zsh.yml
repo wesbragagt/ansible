@@ -1,22 +1,32 @@
 ---
-# Simplified ZSH setup - packages and plugins now managed by Nix
-# Only handles system-level shell change and cleanup tasks
+# ZSH setup - Uses system zsh as login shell to avoid SDDM issues
+# Nix-managed zsh will be used in terminal sessions via exec
 
-- name: Detect ZSH path across platforms
-  shell: which zsh
-  register: zsh_path_result
-  changed_when: false
-  failed_when: false
+- name: Ensure system zsh is installed (Linux)
+  become: True
+  package:
+    name: zsh
+    state: present
+  when: ansible_os_family != "Darwin"
   tags: &tags_for_zsh_tasks ['zsh']
 
-- name: Set ZSH path variable
-  set_fact:
-    detected_zsh_path: "{{ zsh_path_result.stdout if zsh_path_result.rc == 0 else '/bin/zsh' }}"
+- name: Detect system ZSH path
+  shell: |
+    if [ -f /usr/bin/zsh ]; then
+      echo "/usr/bin/zsh"
+    elif [ -f /bin/zsh ]; then
+      echo "/bin/zsh"
+    else
+      # macOS default location
+      echo "/bin/zsh"
+    fi
+  register: system_zsh_path
+  changed_when: false
   tags: *tags_for_zsh_tasks
 
-- name: Change shell to zsh (cross-platform)
+- name: Change login shell to system zsh
   become: True
   user:
     name: '{{ ansible_user_id }}'
-    shell: '{{ detected_zsh_path }}'
+    shell: '{{ system_zsh_path.stdout }}'
   tags: *tags_for_zsh_tasks
