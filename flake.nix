@@ -87,6 +87,24 @@
         # This creates the socket at $XDG_RUNTIME_DIR/ssh-agent.socket on Linux
         services.ssh-agent.enable = !pkgs.stdenv.isDarwin;
         
+        # Keyd service for key remapping - Linux only
+        systemd.user.services.keyd = pkgs.lib.mkIf pkgs.stdenv.isLinux {
+          Unit = {
+            Description = "keyd keyboard remapping daemon";
+            Documentation = "man:keyd(1)";
+            After = [ "graphical-session.target" ];
+          };
+          Service = {
+            Type = "simple";
+            ExecStart = "${pkgs.keyd}/bin/keyd";
+            Restart = "on-failure";
+            RestartSec = 3;
+          };
+          Install = {
+            WantedBy = [ "default.target" ];
+          };
+        };
+        
         
         # Git configuration
         programs.git = {
