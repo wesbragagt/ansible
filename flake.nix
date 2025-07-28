@@ -42,7 +42,8 @@
         openssh
         unzip
 
-        # used for remapping keys
+        # used for remapping keys (Linux only)
+      ] ++ pkgs.lib.optionals pkgs.stdenv.isLinux [
         keyd
 
         # Prettier ls
