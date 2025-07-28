@@ -203,6 +203,38 @@ My setup includes automated SSH agent configuration:
 - My dotfiles can reference this with: `export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR/ssh-agent.socket"`
 - SSH keys automatically added to agent when first used
 
+### Keyd Key Remapping (Linux Only)
+
+The flake includes automated keyd configuration for keyboard remapping on Linux systems:
+- **Automatic setup**: keyd package and systemd user service configured automatically
+- **User-level service**: Runs as a user service, no root privileges needed after setup
+- **Configuration**: Uses your dotfiles keyd configuration from `~/.dotfiles/keyd/etc/keyd/default.conf`
+- **Current mapping**: Caps Lock → Escape (tap) or Ctrl (hold), Escape → Caps Lock
+
+#### Managing Keyd Service
+```bash
+# Check service status
+systemctl --user status keyd
+
+# Restart after config changes
+systemctl --user restart keyd
+
+# View service logs
+journalctl --user -u keyd
+
+# Stop/start service
+systemctl --user stop keyd
+systemctl --user start keyd
+```
+
+#### Configuration Changes
+After editing your keyd configuration file (`~/.dotfiles/keyd/etc/keyd/default.conf`), restart the service to apply changes:
+```bash
+systemctl --user restart keyd
+```
+
+The keyd service starts automatically with your desktop session and requires no manual intervention.
+
 ### Vault Password Management
 
 - SSH keys and sensitive dotfiles are encrypted with Ansible vault
