@@ -4,7 +4,7 @@
 DEFAULT_FLAGS="--ask-become-pass"
 VAULT_FLAG="--ask-vault-pass"
 
-.PHONY: test all nix zsh ssh git-setup dotfiles
+.PHONY: test all nix zsh ssh git-setup dotfiles home-manager-switch home-manager-reload
 
 test:
 	./test/test-nix.sh
@@ -27,3 +27,6 @@ git-setup:
 dotfiles:
 	ansible-playbook local.yml -t dotfiles $(DEFAULT_FLAGS) $(VAULT_FLAG)
 
+# Home-manager commands for package management
+reload:
+	home-manager switch --flake .
