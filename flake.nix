@@ -200,6 +200,7 @@
                 "raycast"
                 "karabiner-elements"
                 "signal"
+                "ghostty"
               ];
             };
             
