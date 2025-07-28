@@ -70,33 +70,19 @@
       ];
       
       # Common home-manager configuration
-      mkHomeConfiguration = { pkgs, username, homeDirectory, ... }: {
+      mkHomeConfiguration = { pkgs, username, homeDirectory, system ? null, ... }: {
         home.username = username;
         home.homeDirectory = homeDirectory;
         home.stateVersion = "24.05";
         
         home.packages = mkPackages pkgs;
         
-        # SSH Agent Service - creates systemd user service automatically
-        # This creates the socket at $XDG_RUNTIME_DIR/ssh-agent.socket
-        # that your zshrc references with SSH_AUTH_SOCK
-        services.ssh-agent.enable = true;
+        # SSH Agent Service - enabled on non-Darwin platforms
+        # home-manager's ssh-agent service uses systemd which doesn't exist on macOS
+        # On macOS, use the system's built-in ssh-agent or configure manually in shell
+        # This creates the socket at $XDG_RUNTIME_DIR/ssh-agent.socket on Linux
+        services.ssh-agent.enable = !pkgs.stdenv.isDarwin;
         
-        # SSH client configuration
-        programs.ssh = {
-          enable = true;
-          # Automatically add SSH keys to agent when used
-          addKeysToAgent = "yes";
-        };
-        
-        # GitHub SSH known hosts (declarative management)
-        home.file.".ssh/known_hosts" = {
-          text = ''
-            github.com ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2l9GKJl
-            github.com ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCj7ndNxQowgcQnjshcLrqPEiiphnt+VTTvDP6mHBL9j1aNUkY4Ue1gvwnGLVlOhGeYrnZaMgRK6+PKCUXaDbC7qtbW8gIkhL7aGCsOr/C56SJMy/BCZfxd1nWzAOxSDPgVsmerOBYfNqltV9/hWCqBywINIR+5dIg6JTJ72pcEpEjcYgXkE2YEFXV1JHnsKgbLWNlhScqb2UmyRkQyytRLtL+38TGxkxCflmO+5Z8CSSNY7GidjMIZ7Q4zMjA2n1nGrlTDkzwDCsw+wqFPGQA179cnfGWOWRVruj16z6XyvxvjJwbz0wQZ75XK5tKSb7FNyeIEs4TT4jk+S4dhPeAUC5y+bDYirYgM4GC7uEnztnZyaVWQ7B381AK4Qdrwt51ZqExKbQpTUNn+EjqoTwvqNj4kqx5QUCI0ThS/YkOxJCXmPUWZbhjpCg56i+2aB6CmK2JGhn57K5mj0MNdBXA4/WnwH6XoPWJzK5Nyu2zB3nAZp+S5hpQs+p1vN1/wsjk=
-            github.com ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBEmKSENjQEezOmxkZMy7opKgwFB9nkt5YRrYMjNuG5N87uRgg6CLrbo5wAdT/y6v0mKV0U2w0WZ2YB/++Tpockg=
-          '';
-        };
         
         # Git configuration
         programs.git = {

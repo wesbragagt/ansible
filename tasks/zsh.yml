@@ -20,19 +20,3 @@
     name: '{{ ansible_user_id }}'
     shell: '{{ detected_zsh_path }}'
   tags: *tags_for_zsh_tasks
-
-- name: Remove oh-my-zsh (deprecated cleanup)
-  file:
-    path: '{{ ansible_user_dir }}/.oh-my-zsh'
-    state: absent
-  become: True
-  become_user: '{{ ansible_user_id }}'
-  tags: *tags_for_zsh_tasks
-
-- name: Remove old manual ZSH plugins (now managed by Nix)
-  file:
-    path: '{{ ansible_user_dir }}/.zsh'
-    state: absent
-  become: True
-  become_user: '{{ ansible_user_id }}'
-  tags: *tags_for_zsh_tasks

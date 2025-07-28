@@ -18,3 +18,11 @@
     src: "{{ source_key }}.pub"
     dest: "{{ dest_key }}.pub"
     mode: 0644
+
+- name: Copy SSH known_hosts file
+  tags: *ssh_tags
+  copy:
+    src: .ssh/known_hosts
+    dest: "{{ ansible_env.HOME }}/.ssh/known_hosts"
+    mode: 0600
+    force: no
