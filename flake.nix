@@ -199,6 +199,7 @@
                 "discord"
                 "raycast"
                 "karabiner-elements"
+                "signal"
               ];
             };
             
