@@ -60,7 +60,7 @@ The Ansible task automatically replaces these hardcoded values in `flake.nix`:
 ```nix
 # Original values (in the repo)
 userName = "wesbragagt";
-userEmail = "wesbragagt@example.com";
+userEmail = "wesbragagt@gmail.com";
 "wesbragagt@linux-x86_64"
 username = "wesbragagt";
 homeDirectory = "/Users/wesbragagt";

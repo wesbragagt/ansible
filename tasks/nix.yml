@@ -17,7 +17,7 @@
 - name: Replace git user email in flake.nix
   replace:
     path: "{{ playbook_dir }}/{{ flake_dest | default('flake.nix') }}"
-    regexp: 'userEmail = "wesbragagt@example.com";'
+    regexp: 'userEmail = "wesbragagt@gmail.com";'
     replace: 'userEmail = "{{ git_user_email }}";'
   tags: ['nix', 'install']
 
