@@ -1,42 +1,9 @@
-- name: Installing stow (macOS)
-  become: True
-  become_user: '{{ansible_user_id}}'
-  shell: brew install stow
-  tags: &dotfiles_tags ['install', 'dotfiles']
-  when: ansible_distribution == "MacOSX"
-
-- name: Installing stow (Arch Linux)
-  become: True
-  community.general.pacman:
-    name: stow
-    state: present
-    update_cache: true
-  tags: *dotfiles_tags
-  when: ansible_distribution == "Archlinux"
-
-- name: Installing stow (Fedora)
-  become: True
-  ansible.builtin.dnf:
-    name: stow
-    state: present
-    update_cache: true
-  tags: *dotfiles_tags
-  when: ansible_distribution == "Fedora"
-
-- name: Installing stow (Ubuntu/LinuxMint)
-  become: True
-  ansible.builtin.apt:
-    name: stow
-    state: present
-    update_cache: true
-  tags: *dotfiles_tags
-  when: ansible_distribution in ["Ubuntu", "LinuxMint"]
-
 - name: Check for dotfiles cloned
   stat:
     path: ~/.dotfiles
   register: dotfiles_check
-  tags: *dotfiles_tags
+  tags: &dotfiles_tags
+    - dotfiles
 
 - name: Cloning .dotfiles
   shell: git clone --recurse-submodules https://github.com/wesbragagt/.dotfiles.git ~/.dotfiles

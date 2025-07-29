@@ -1,14 +1,30 @@
 ---
 # ZSH setup - Uses system zsh as login shell to avoid SDDM issues
-# Nix-managed zsh will be used in terminal sessions via exec
+- name: Check if zsh is already installed
+  shell: which zsh
+  register: zsh_check
+  failed_when: false
+  changed_when: false
+  tags: &tags_for_zsh_tasks ['zsh']
 
-- name: Ensure system zsh is installed (Linux)
+- name: Ensure zsh is installed (Arch Linux)
   become: True
-  package:
+  pacman:
     name: zsh
     state: present
-  when: ansible_os_family != "Darwin"
-  tags: &tags_for_zsh_tasks ['zsh']
+  when: 
+    - ansible_os_family == "Archlinux"
+    - zsh_check.rc != 0
+  tags: *tags_for_zsh_tasks
+
+- name: Ensure zsh is installed (macOS/Darwin)
+  homebrew:
+    name: zsh
+    state: present
+  when: 
+    - ansible_os_family == "Darwin"
+    - zsh_check.rc != 0
+  tags: *tags_for_zsh_tasks
 
 - name: Detect system ZSH path
   shell: |

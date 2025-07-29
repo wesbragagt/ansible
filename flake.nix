@@ -25,7 +25,6 @@
       
       # Package configuration for all platforms
       mkPackages = pkgs: with pkgs; [
-        zsh
         # Core CLI tools
         fzf
         ripgrep
@@ -67,9 +66,6 @@
         nerd-fonts.hack
         nerd-fonts.fira-code
 
-        # used for remapping keys (Linux only)
-      ] ++ pkgs.lib.optionals pkgs.stdenv.isLinux [
-        keyd
       ];
       
       # Common home-manager configuration
@@ -80,29 +76,7 @@
         
         home.packages = mkPackages pkgs;
         
-        # SSH Agent Service - enabled on non-Darwin platforms
-        # home-manager's ssh-agent service uses systemd which doesn't exist on macOS
-        # On macOS, use the system's built-in ssh-agent or configure manually in shell
-        # This creates the socket at $XDG_RUNTIME_DIR/ssh-agent.socket on Linux
-        services.ssh-agent.enable = !pkgs.stdenv.isDarwin;
         
-        # Keyd service for key remapping - Linux only
-        systemd.user.services.keyd = pkgs.lib.mkIf pkgs.stdenv.isLinux {
-          Unit = {
-            Description = "keyd keyboard remapping daemon";
-            Documentation = "man:keyd(1)";
-            After = [ "graphical-session.target" ];
-          };
-          Service = {
-            Type = "simple";
-            ExecStart = "${pkgs.keyd}/bin/keyd";
-            Restart = "on-failure";
-            RestartSec = 3;
-          };
-          Install = {
-            WantedBy = [ "default.target" ];
-          };
-        };
         
         
         # Git configuration

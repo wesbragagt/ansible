@@ -26,3 +26,47 @@
     dest: "{{ ansible_env.HOME }}/.ssh/known_hosts"
     mode: 0600
     force: no
+
+- name: Setup SSH agent for Linux
+  when: ansible_system == "Linux"
+  tags: *ssh_tags
+  block:
+    - name: Create systemd user directory
+      file:
+        path: "{{ ansible_env.HOME }}/.config/systemd/user"
+        state: directory
+        mode: 0755
+
+    - name: Create SSH agent service file
+      copy:
+        dest: "{{ ansible_env.HOME }}/.config/systemd/user/ssh-agent.service"
+        mode: 0644
+        content: |
+          [Unit]
+          Description=SSH key agent
+          Before=graphical-session-pre.target
+          Wants=graphical-session-pre.target
+
+          [Service]
+          Type=simple
+          Environment="SSH_AUTH_SOCK=%t/ssh-agent.socket"
+          ExecStart=/usr/bin/ssh-agent -D -a $SSH_AUTH_SOCK
+          ExecStartPost=/bin/sh -c 'echo "SSH_AUTH_SOCK=$SSH_AUTH_SOCK; export SSH_AUTH_SOCK" > %h/.ssh-agent-info'
+
+          [Install]
+          WantedBy=default.target
+
+    - name: Enable and start SSH agent service
+      systemd:
+        name: ssh-agent
+        scope: user
+        enabled: yes
+        state: started
+        daemon_reload: yes
+
+    - name: Add SSH_AUTH_SOCK to shell profile
+      lineinfile:
+        path: "{{ ansible_env.HOME }}/.profile"
+        line: 'export SSH_AUTH_SOCK="${XDG_RUNTIME_DIR}/ssh-agent.socket"'
+        create: yes
+        mode: 0644

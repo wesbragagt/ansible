@@ -13,5 +13,7 @@
       tags: ['git-setup']
     - include_tasks: tasks/zsh.yml
       tags: ['zsh']
+    - include_tasks: tasks/keyd.yml
+      tags: ['keyd']
     - include_tasks: tasks/dotfiles.yml
       tags: ['dotfiles']
