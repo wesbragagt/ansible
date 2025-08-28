@@ -66,6 +66,8 @@
         nerd-fonts.hack
         nerd-fonts.fira-code
 
+        csvlens
+        duckdb
       ];
       
       # Common home-manager configuration
