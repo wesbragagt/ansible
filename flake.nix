@@ -45,6 +45,8 @@
         eza
         
         # Shell environment
+        zsh
+        zsh-autosuggestions
         starship
         
         # Development tools
@@ -68,6 +70,10 @@
 
         csvlens
         duckdb
+
+        # used for remapping keys (Linux only)
+      ] ++ pkgs.lib.optionals pkgs.stdenv.isLinux [
+        keyd
       ];
       
       # Common home-manager configuration
@@ -77,6 +83,10 @@
         home.stateVersion = "24.05";
         
         home.packages = mkPackages pkgs;
+
+        home.sessionPath = [
+          "$HOME/.npm_global/bin"
+        ];
         
         
         
@@ -98,7 +108,6 @@
             diff.colorMoved = "default";
           };
         };
-        
         programs.home-manager.enable = true;
       };
     in

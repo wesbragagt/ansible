@@ -203,6 +203,26 @@ My setup includes automated SSH agent configuration:
 - My dotfiles can reference this with: `export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR/ssh-agent.socket"`
 - SSH keys automatically added to agent when first used
 
+### ZSH Plugin Integration
+
+The setup includes ZSH autosuggestions plugin managed via Nix with Stow-based configuration:
+- **Nix downloads**: `zsh-autosuggestions` package managed by Nix for reproducibility
+- **Stow configures**: Your `.zshrc` (from dotfiles) sources the Nix-provided plugin
+- **Hybrid approach**: Best of both worlds - reliable downloads, flexible configuration
+
+#### Using ZSH Plugins in Your Dotfiles
+
+Add this to your `.zshrc` in your dotfiles repository to source the Nix-provided autosuggestions:
+
+```bash
+# Source ZSH plugins provided by Nix
+if [ -f ~/.nix-profile/share/zsh-autosuggestions/zsh-autosuggestions.zsh ]; then
+    source ~/.nix-profile/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+fi
+```
+
+After updating your dotfiles repository, run `make dotfiles` to apply changes via Stow.
+
 ### Keyd Key Remapping (Linux Only)
 
 The flake includes automated keyd configuration for keyboard remapping on Linux systems:
