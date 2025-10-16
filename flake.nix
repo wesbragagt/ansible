@@ -74,6 +74,8 @@
         # used for remapping keys (Linux only)
       ] ++ pkgs.lib.optionals pkgs.stdenv.isLinux [
         keyd
+        # Web search with duck duck go
+        ddgr
       ];
       
       # Common home-manager configuration
