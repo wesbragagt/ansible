@@ -71,6 +71,8 @@
         csvlens
         duckdb
 
+        gcalcli
+
         # used for remapping keys (Linux only)
       ] ++ pkgs.lib.optionals pkgs.stdenv.isLinux [
         keyd
