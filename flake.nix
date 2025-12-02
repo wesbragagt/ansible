@@ -40,6 +40,7 @@
         git-lfs
         stow
         openssh
+        zip
         unzip
         # Prettier ls
         eza
