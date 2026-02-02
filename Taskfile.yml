@@ -1,0 +1,55 @@
+# Cross-platform Ansible automation tool for macOS, Arch Linux, and Fedora
+# All commands work on all platforms with automatic OS detection
+# https://taskfile.dev
+
+version: '3'
+
+vars:
+  DEFAULT_FLAGS: --ask-become-pass
+  VAULT_FLAG: --ask-vault-pass
+
+tasks:
+  test:
+    desc: Run Nix tests
+    cmds:
+      - ./test/test-nix.sh
+
+  all:
+    desc: Complete setup with vault
+    cmds:
+      - ansible-playbook local.yml {{.DEFAULT_FLAGS}} {{.VAULT_FLAG}}
+
+  nix:
+    desc: Install Nix and packages
+    cmds:
+      - ansible-playbook local.yml -t nix {{.DEFAULT_FLAGS}}
+
+  zsh:
+    desc: ZSH configuration
+    cmds:
+      - ansible-playbook local.yml -t zsh {{.DEFAULT_FLAGS}}
+
+  ssh:
+    desc: SSH setup (vault required)
+    cmds:
+      - ansible-playbook local.yml -t ssh {{.DEFAULT_FLAGS}} {{.VAULT_FLAG}}
+
+  git-setup:
+    desc: Git configuration setup
+    cmds:
+      - ansible-playbook local.yml -t git-setup
+
+  dotfiles:
+    desc: Deploy dotfiles (vault required)
+    cmds:
+      - ansible-playbook local.yml -t dotfiles {{.DEFAULT_FLAGS}} {{.VAULT_FLAG}}
+
+  reload-darwin:
+    desc: Home-manager switch for macOS ARM
+    cmds:
+      - home-manager switch --flake .#wesbragagt@darwin-aarch64
+
+  reload-linux:
+    desc: Home-manager switch for Linux x86_64
+    cmds:
+      - home-manager switch --flake .#wesbragagt@linux-x86_64

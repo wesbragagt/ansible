@@ -33,6 +33,7 @@
         wget
         tmux
         jq
+        lazygit
         delta
         gh
         zoxide
@@ -72,6 +73,7 @@
         csvlens
         duckdb
         harlequin
+        go-task
 
         gcalcli
 
