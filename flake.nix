@@ -71,6 +71,7 @@
 
         csvlens
         duckdb
+        harlequin
 
         gcalcli
 
@@ -99,9 +100,9 @@
         # Git configuration
         programs.git = {
           enable = true;
-          userName = "wesbragagt";
-          userEmail = "wesbragagt@gmail.com";
-          extraConfig = {
+          settings = {
+            user.name = "wesbragagt";
+            user.email = "wesbragagt@gmail.com";
             core.pager = "delta";
             interactive.diffFilter = "delta --color-only";
             delta = {
