@@ -13,9 +13,11 @@
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    workmux.url = "github:raine/workmux";
   };
 
-  outputs = { self, nixpkgs, darwin, home-manager }:
+  outputs = { self, nixpkgs, darwin, home-manager, workmux }:
     let
       # Supported systems
       systems = [ "x86_64-linux" "aarch64-linux" "x86_64-darwin" "aarch64-darwin" ];
@@ -74,7 +76,9 @@
         duckdb
         harlequin
         go-task
-        workmux
+        # External packages
+        workmux.packages.${pkgs.system}.default
+
         # used for remapping keys (Linux only)
       ] ++ pkgs.lib.optionals pkgs.stdenv.isLinux [
         keyd

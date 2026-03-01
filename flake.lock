@@ -56,46 +56,11 @@
         "type": "github"
       }
     },
-    "nixpkgs_2": {
-      "locked": {
-        "lastModified": 1768305791,
-        "narHash": "sha256-AIdl6WAn9aymeaH/NvBj0H9qM+XuAuYbGMZaP0zcXAQ=",
-        "owner": "NixOS",
-        "repo": "nixpkgs",
-        "rev": "1412caf7bf9e660f2f962917c14b1ea1c3bc695e",
-        "type": "github"
-      },
-      "original": {
-        "owner": "NixOS",
-        "ref": "nixos-unstable",
-        "repo": "nixpkgs",
-        "type": "github"
-      }
-    },
     "root": {
       "inputs": {
         "darwin": "darwin",
         "home-manager": "home-manager",
-        "nixpkgs": "nixpkgs",
-        "workmux": "workmux"
-      }
-    },
-    "workmux": {
-      "inputs": {
-        "nixpkgs": "nixpkgs_2"
-      },
-      "locked": {
-        "lastModified": 1772394145,
-        "narHash": "sha256-6CPpLvuokMCLSgHGrqCOHqh6ccZVrQapJObLhwMt9BM=",
-        "owner": "raine",
-        "repo": "workmux",
-        "rev": "fbd8fd052a48953c495f7a98362420f7c83078d0",
-        "type": "github"
-      },
-      "original": {
-        "owner": "raine",
-        "repo": "workmux",
-        "type": "github"
+        "nixpkgs": "nixpkgs"
       }
     }
   },
