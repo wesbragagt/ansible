@@ -78,7 +78,6 @@
         go-task
         # External packages
         workmux.packages.${pkgs.system}.default
-
         # used for remapping keys (Linux only)
       ] ++ pkgs.lib.optionals pkgs.stdenv.isLinux [
         keyd
@@ -214,7 +213,7 @@
                 "slack"
                 "discord"
                 "raycast"
-                "karabiner-elements"
+                "hyperkey"
                 "signal"
                 "ghostty"
               ];
